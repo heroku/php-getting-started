@@ -9,6 +9,11 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
   'monolog.logfile' => 'php://stderr',
 ));
 
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
+    'twig.path' => __DIR__.'/views',
+));
+
+
 // ... definitions
 $app->get('/', function () use ($app) {
   $app['monolog']->addError('Testing the Monolog logging.');
@@ -17,6 +22,12 @@ $app->get('/', function () use ($app) {
 
 $app->get('/foo/', function () use ($app) {
   return 'HelloFoo';
+});
+
+$app->get('/twig/{name}', function ($name) use ($app) {
+    return $app['twig']->render('index.twig', array(
+        'name' => $name,
+    ));
 });
 
 // ... definitions
