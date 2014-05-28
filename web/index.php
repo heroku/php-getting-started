@@ -3,10 +3,15 @@
 require('../vendor/autoload.php');
 
 $app = new Silex\Application();
-$app['debug'] = true;
+//$app['debug'] = true;
+
+$app->register(new Silex\Provider\MonologServiceProvider(), array(
+  'monolog.logfile' => 'php://stderr',
+));
 
 // ... definitions
 $app->get('/', function () use ($app) {
+  $app['monolog']->addDebug('Testing the Monolog logging.');
   return 'Hello';
 });
 
@@ -16,7 +21,7 @@ $app->get('/foo/', function () use ($app) {
 
 // ... definitions
 $app->get('/{name}', function ($name) use ($app) {
-    return 'Hello '.$app->escape($name);
+  return 'Hello '.$app->escape($name);
 });
 
 
@@ -25,15 +30,6 @@ $app->run();
 
 ?>
 <!--
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
-// create a log channel to STDERR
-$log = new Logger('name');
-$log->pushHandler(new StreamHandler('php://stderr', Logger::WARNING));
-
-// add records to the log
-$log->addWarning("This message will be logged!");
 
 
 echo "Hello World!";
