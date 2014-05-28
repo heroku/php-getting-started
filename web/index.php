@@ -2,6 +2,29 @@
 
 require('../vendor/autoload.php');
 
+$app = new Silex\Application();
+$app['debug'] = true;
+
+// ... definitions
+$app->get('/', function () use ($app) {
+  return 'Hello';
+});
+
+$app->get('/foo/', function () use ($app) {
+  return 'HelloFoo';
+});
+
+// ... definitions
+$app->get('/{name}', function ($name) use ($app) {
+    return 'Hello '.$app->escape($name);
+});
+
+
+$app->run();
+
+
+?>
+<!--
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -22,5 +45,4 @@ $twig = new Twig_Environment($loader, array(
 ));
 
 echo $twig->render('index.twig', array('name' => 'Jon was here'));
-
-?>
+-->

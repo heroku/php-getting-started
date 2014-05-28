@@ -1,0 +1,8 @@
+<IfModule mod_rewrite.c>
+    Options -MultiViews FollowSymLinks
+
+    RewriteEngine On
+    #-RewriteBase /~jonmountjoy/php-getting-started//web
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ web/index.php [QSA,L]
+</IfModule>
