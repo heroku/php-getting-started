@@ -1,10 +1,10 @@
 # php-getting-started
 
-A barebones PHP app using [Silex](http://expressjs.com/).
+A barebones PHP app using [Silex](http://silex.sensiolabs.org/) and [Twig](http://twig.sensiolabs.org/).
 
 ## Running Locally
 
-Make sure you have [Node.js](http://nodejs.org/) and the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
+Make sure you have PHP, Apache and Composer installed.  Also, install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
 
 ```sh
 git clone git@github.com:jonmountjoy/php-getting-started.git # or clone your own fork
