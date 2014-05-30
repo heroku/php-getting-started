@@ -1,6 +1,10 @@
 # php-getting-started
 
-A barebones PHP app using [Silex](http://silex.sensiolabs.org/) and [Twig](http://twig.sensiolabs.org/).
+A barebones PHP bootstrap app that makes use of:
+
+* The [Silex](http://silex.sensiolabs.org/) web framework
+* [Twig](http://twig.sensiolabs.org/) templating
+* PDO database access
 
 ## Running Locally
 
@@ -22,6 +26,14 @@ heroku create
 heroku addons:add heroku-postgresql:dev
 git push heroku master
 heroku open
+```
+
+You may want to add some data to the database too:
+
+```
+heroku pg:psql
+> CREATE TABLE test_table (id integer, name text);
+> INSERT INTO test_table VALUES (1, 'hello world');
 ```
 
 ## Documentation
