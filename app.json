@@ -1,14 +1,6 @@
 {
-  "name": "PHP Starter",
-  "description": "start php app on heroku via api",
-  "website": "http://php.net",
+  "name": "PHP Getting Started",
+  "description": "A barebones PHP app that makes use of the Silex web framework",
   "repository": "https://github.com/heroku/php-getting-started",
-  "scripts": {
-    "postdeploy": "composer install"
-  },
-  "env": {
-    "PHP_ENV": "production",
-    "PHP_SERVE_STATIC_FILES": "true"
-  },
   "addons": []
 }
