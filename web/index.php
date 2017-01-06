@@ -59,7 +59,7 @@ $app->get('/log', function() use($app) {
 	$sql = "insert into acc_log (ip, uri, agent) values (?,?,?)";
 	$ip =get_client_ip_server();
 	$uri =$_SERVER['REQUEST_URI'];
-	$agent = get_browser();
+	$agent = $_SERVER['HTTP_USER_AGENT'];
 	$app['db']->executeUpdate($sql, array($ip, $uri, $agent));
 	return "<p>stored : $ip</p>".
 	       "<p>$uri</p>".
