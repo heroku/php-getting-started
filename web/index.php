@@ -23,7 +23,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 	'user'	 => $dbopts["user"],
 	'password'  => $dbopts["pass"],
 	'port'	    => $dbopts["port"],
-	'dbname'    => $dbopts["path"],
+	'dbname'    => substr($dbopts["path"], 1),
     ),
 ));
 
