@@ -74,7 +74,7 @@ $app->get('/2mb', function() use($app) {
 
 $app->get('/chart', function() use($app) {
  store_log($app);
- $dataset = $app->fetchAll("select * from acc_log");
+ $dataset = $app['db']->fetchAll("select * from acc_log");
  return $app['twig']->render('chart.twig', array(
     'dataset' => $dataset
  ));
