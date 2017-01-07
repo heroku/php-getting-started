@@ -47,23 +47,29 @@ $ipaddress = 'UNKNOWN';
 
 return $ipaddress;
 }
-// Our web handlers
 
-$app->get('/', function() use($app) {
-  return "<p>hello</p>";
-  //$app['monolog']->addDebug('logging output.');
-  //return $app['twig']->render('index.twig');
-});
-
-$app->get('/log', function() use($app) {
+function store_log($app){
 	$sql = "insert into acc_log (ip, uri, agent) values (?,?,?)";
 	$ip =get_client_ip_server();
 	$uri =$_SERVER['REQUEST_URI'];
 	$agent = $_SERVER['HTTP_USER_AGENT'];
-	$app['db']->executeUpdate($sql, array($ip, $uri, $agent));
-	return "<p>stored : $ip</p>".
-	       "<p>$uri</p>".
-	       "<p>$agent</p>";
+        $params = array($ip, $uri, $agent);
+	$app['db']->executeUpdate($sql, $params);
+ return $params;
+}
+// Our web handlers
+
+$app->get('/', function() use($app) {
+        $params = store_log($app);
+	return "<p>stored : $params[0]</p>".
+	       "<p>$params[1]</p>".
+	       "<p>$params[2]</p>";
+  //$app['monolog']->addDebug('logging output.');
+  //return $app['twig']->render('index.twig');
+});
+
+$app->get('/2mb', function() use() {
+  return "<img src='/images/2mb.jpg' />";
 });
 
 $app->run();
