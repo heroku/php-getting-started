@@ -1,25 +1,31 @@
 <?php
-
 require('../vendor/autoload.php');
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
-$app['debug'] = true;
-
-// Register the monolog logging service
+$bot = new CU\LineBot();
 $app->register(new Silex\Provider\MonologServiceProvider(), array(
-  'monolog.logfile' => 'php://stderr',
+    'monolog.logfile' => 'php://stderr',
 ));
-
-// Register view rendering
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__.'/views',
-));
-
-// Our web handlers
-
-$app->get('/', function() use($app) {
-  $app['monolog']->addDebug('logging output.');
-  return $app['twig']->render('index.twig');
+$app->before(function (Request $request) use($bot) {
+    // Signature validation
+    $request_body = $request->getContent();
+    $signature = $request->headers->get('X-LINE-CHANNELSIGNATURE');
+    if (!$bot->isValid($signature, $request_body)) {
+        return new Response('Signature validation failed.', 400);
+    }
 });
-
+$app->post('/callback', function (Request $request) use ($app, $bot) {
+    // Let's hack from here!
+    $body = json_decode($request->getContent(), true);
+    foreach ($body['result'] as $obj) {
+        $app['monolog']->addInfo(sprintf('obj: %s', json_encode($obj)));
+        $from = $obj['content']['from'];
+        $content = $obj['content'];
+        if ($content['text']) {
+            $bot->sendText($from, sprintf('%sです', $content['text'])); 
+        }
+    }
+    return 0;
+});
 $app->run();
