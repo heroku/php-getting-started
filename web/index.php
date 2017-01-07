@@ -68,7 +68,7 @@ $app->get('/', function() use($app) {
   //return $app['twig']->render('index.twig');
 });
 
-$app->get('/2mb', function() use() {
+$app->get('/2mb', function() use($app) {
   return "<img src='/images/2mb.jpg' />";
 });
 
