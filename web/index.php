@@ -72,4 +72,12 @@ $app->get('/2mb', function() use($app) {
   return "<img src='/images/2mb.jpg' />";
 });
 
+$app->get('/chart', function() use($app) {
+ store_log($app);
+ $dataset = $app->fetchAll("select * from acc_log");
+ return $app['twig']->render('chart.twig', array(
+    'dataset' => $dataset
+ ));
+});
+
 $app->run();
