@@ -4,7 +4,7 @@ A barebones PHP app that makes use of the [Silex](http://silex.sensiolabs.org/) 
 
 This application supports the [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php) article - check it out.
 
-## Deploying
+## Kurulum
 
 Install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
 
