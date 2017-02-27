@@ -2,7 +2,7 @@
 
 [Silex](http://silex.sensiolabs.org/) web framework kullanılarak harzırlanan bir barebone PHP uygulaması, Heroku'da kolayca konuşlandırabilirsiniz.
 
-This application supports the [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php) article - kontrol edin.
+Bu uygulama hakkında daha fazla bilgi için[Heroku içinde PHP başlangıç](https://devcenter.heroku.com/articles/getting-started-with-php) makalesini - kontrol edin.
 
 ## Kurulum
 
