@@ -2,11 +2,11 @@
 
 A barebones PHP app that makes use of the [Silex](http://silex.sensiolabs.org/) web framework, which can easily be deployed to Heroku.
 
-This application supports the [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php) article - check it out.
+This application supports the [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php) article - kontrol edin.
 
 ## Kurulum
 
-Install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
+[Heroku Toolbelt](https://toolbelt.heroku.com/) 'i kurun.
 
 ```sh
 $ git clone git@github.com:heroku/php-getting-started.git # or clone your own fork
@@ -16,13 +16,13 @@ $ git push heroku master
 $ heroku open
 ```
 
-or
+veya
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+[![Heroku'da kurun](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-## Documentation
+## Dökümantasyon
 
-For more information about using PHP on Heroku, see these Dev Center articles:
+Heroku üzerinde PHP kullanma hakkında daha fazla bilgi için geliştirici merkezi makalalerine bakın:
 
-- [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php)
-- [PHP on Heroku](https://devcenter.heroku.com/categories/php)
+- [Heroku üzerinde PHP başlangı.](https://devcenter.heroku.com/articles/getting-started-with-php)
+- [Heroku üzerinde PHP](https://devcenter.heroku.com/categories/php)
