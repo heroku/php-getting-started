@@ -9,7 +9,7 @@ Bu uygulama hakkında daha fazla bilgi için[Heroku'da PHP'ye Başlarken](https:
 [Heroku Toolbelt](https://toolbelt.heroku.com/) 'i kurun.
 
 ```sh
-$ git clone git@github.com:heroku/php-getting-started.git # or clone your own fork
+$ git clone git@github.com:heroku/php-getting-started.git # veya kendi fork'unuzu klonlayabilirsiniz
 $ cd php-getting-started
 $ heroku create
 $ git push heroku master
