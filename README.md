@@ -26,3 +26,29 @@ For more information about using PHP on Heroku, see these Dev Center articles:
 
 - [Getting Started with PHP on Heroku](https://devcenter.heroku.com/articles/getting-started-with-php)
 - [PHP on Heroku](https://devcenter.heroku.com/categories/php)
+
+Tradução para Português-Br
+
+# php-getting-started
+
+Um aplicativo PHP barebones que faz uso de framework web do Silex , que pode ser facilmente implantado em Heroku .
+
+Esta aplicação suporta a Introdução ao PHP no artigo Heroku - check-out .
+
+## Deploying
+
+Install the [Heroku Toolbelt](https://toolbelt.heroku.com/).
+
+```sh
+$ git clone git@github.com:heroku/php-getting-started.git # or clone your own fork
+$ cd php-getting-started
+$ heroku create
+$ git push heroku master
+$ heroku open
+```
+
+## Documentação
+
+Para obter mais informações sobre como usar o PHP no Heroku , consulte estes artigos Dev Center:
+
+- [PHP on Heroku](https://devcenter.heroku.com/categories/php)
