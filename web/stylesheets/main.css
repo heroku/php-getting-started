@@ -1,9 +1,9 @@
 .owl-jumbotron {
-    background-image: url(https://www.discoverwildcare.org/wp-content/uploads/2016/02/barn-owl-banner_plain.png);
-    background-position: top center;
+    background-image: url(https://www.discoverwildcare.org/wp-content/uploads/2016/02/barn-owl-banner_plain.png); background-position: top center;
 	background-repeat: no-repeat;
 	background-size: cover;
 	padding: 0;
+	margin: 0;
 } 
 
 .owl-jumbotron .bg-overlay {
@@ -13,4 +13,21 @@
 	padding: 4rem 2rem;
 	margin: 0 !important;
 	color: white;
+}
+
+section {
+	padding: 2rem;
+}
+
+.fa-check {
+	color: green;
+}
+
+.fa-times {
+	color: red;
+}
+
+tr, td {
+	text-align: center; 
+	vertical-align: middle !important;
 }
