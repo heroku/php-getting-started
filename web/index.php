@@ -22,6 +22,11 @@ $app->get('/', function() use($app) {
   return $app['twig']->render('index.twig');
 });
 
+$app->get('/cowsay', function() use($app) {
+  return "cowsaytung what";
+});
+
+
 $app->get('/cowsay2', function() use($app) {
     return "cowsaytung";
 });
