@@ -1,25 +1,30 @@
 <?php
 
-require('../vendor/autoload.php');
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Factory\AppFactory;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
-$app = new Silex\Application();
-$app['debug'] = true;
+require(__DIR__.'/../vendor/autoload.php');
 
-// Register the monolog logging service
-$app->register(new Silex\Provider\MonologServiceProvider(), array(
-  'monolog.logfile' => 'php://stderr',
-));
+// Create main Slim app
+$app = AppFactory::create();
+$app->addErrorMiddleware(true, false, false);
 
-// Register view rendering
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__.'/views',
-));
+// Twig for Views
+$app->add(TwigMiddleware::create($app, Twig::create(__DIR__.'/views')));
+
+// // Register the monolog logging service
+// $app->register(new Silex\Provider\MonologServiceProvider(), array(
+//   'monolog.logfile' => 'php://stderr',
+// ));
 
 // Our web handlers
-
-$app->get('/', function() use($app) {
-  $app['monolog']->addDebug('logging output.');
-  return $app['twig']->render('index.twig');
+$app->get('/', function(Request $request, Response $response, $args) {
+  $twig = Twig::fromRequest($request);
+  // $app['monolog']->addDebug('logging output.');
+  return $twig->render($response, 'index.twig');
 });
 
 $app->run();
