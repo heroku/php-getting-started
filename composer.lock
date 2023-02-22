@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41ce0e9b3035bd693d3cec8992cc8599",
+    "content-hash": "0aa7148272c380d8d4d48317eb390443",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -400,6 +400,47 @@
                 }
             ],
             "time": "2023-02-07T17:34:03+00:00"
+        },
+        {
+            "name": "php-di/slim-bridge",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHP-DI/Slim-Bridge.git",
+                "reference": "9374b67ebf2f135b32c34907b7891b02b935d845"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHP-DI/Slim-Bridge/zipball/9374b67ebf2f135b32c34907b7891b02b935d845",
+                "reference": "9374b67ebf2f135b32c34907b7891b02b935d845",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1 || ^8.0",
+                "php-di/invoker": "^2.0.0",
+                "php-di/php-di": "^6.0|^7.0",
+                "slim/slim": "^4.2.0"
+            },
+            "require-dev": {
+                "laminas/laminas-diactoros": "^2.1",
+                "phpunit/phpunit": ">= 7.0 < 10"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DI\\Bridge\\Slim\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP-DI integration in Slim",
+            "support": {
+                "issues": "https://github.com/PHP-DI/Slim-Bridge/issues",
+                "source": "https://github.com/PHP-DI/Slim-Bridge/tree/3.3.0"
+            },
+            "time": "2023-01-13T15:49:44+00:00"
         },
         {
             "name": "psr/container",
