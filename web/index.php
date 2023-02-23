@@ -25,6 +25,10 @@ $container->set(LoggerInterface::class, function () {
   $logger->pushHandler(new StreamHandler('php://stderr'), Level::Debug);
   return $logger;
 });
+// Add Cowsay to Container
+$container->set(\Cowsayphp\AnimalInterface::class, function() {
+  return \Cowsayphp\Farm::create(\Cowsayphp\Farm\Cow::class);
+});
 
 // Create main Slim app
 $app = Bridge::create($container);
@@ -34,6 +38,11 @@ $app->addErrorMiddleware(true, false, false);
 $app->get('/', function(Request $request, Response $response, LoggerInterface $logger, Twig $twig) {
   $logger->debug('logging output.');
   return $twig->render($response, 'index.twig');
+});
+$app->get('/coolbeans', function(Request $request, Response $response, LoggerInterface $logger, \Cowsayphp\AnimalInterface $animal) {
+  $logger->debug('letting the Cowsay library write something cool.');
+  $response->getBody()->write("<pre>".$animal->say("Cool beans")."</pre>");
+  return $response;
 });
 
 $app->run();
