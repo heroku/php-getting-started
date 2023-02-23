@@ -17,7 +17,7 @@ require(__DIR__.'/../vendor/autoload.php');
 $container = new Container();
 // Add Twig to Container
 $container->set(Twig::class, function() {
-  return Twig::create(__DIR__.'/views');
+  return Twig::create(__DIR__.'/../views');
 });
 // Add Monolog to Container
 $container->set(LoggerInterface::class, function () {
