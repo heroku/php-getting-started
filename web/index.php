@@ -27,7 +27,8 @@ $container->set(LoggerInterface::class, function () {
 });
 // Add Cowsay to Container
 $container->set(\Cowsayphp\AnimalInterface::class, function() {
-  return \Cowsayphp\Farm::create(\Cowsayphp\Farm\Cow::class);
+  $class = '\\Cowsayphp\\Farm\\'.(getenv("COWSAY_FARM_CLASS")?:'Cow');
+  return \Cowsayphp\Farm::create($class);
 });
 
 // Create main Slim app
