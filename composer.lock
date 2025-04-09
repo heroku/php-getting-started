@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a111f8a08a22381b72dcdd5cd3df9d9b",
+    "content-hash": "fd1c6ebc72e04813f8b180cecafb060c",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -445,6 +445,48 @@
                 "source": "https://github.com/PHP-DI/Slim-Bridge/tree/3.4.1"
             },
             "time": "2024-06-19T15:47:45+00:00"
+        },
+        {
+            "name": "psr/clock",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./clock",
+                "reference": "80062f8284d0c1637d10fd832160bb3620457dcf"
+            },
+            "require": {
+                "php": "^7.0 || ^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Clock\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "https://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for reading the clock.",
+            "homepage": "https://github.com/php-fig/clock",
+            "keywords": [
+                "clock",
+                "now",
+                "psr",
+                "psr-20",
+                "time"
+            ],
+            "support": {
+                "source": "https://github.com/php-fig/clock"
+            },
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "psr/container",
@@ -1589,7 +1631,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "psr/clock": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
