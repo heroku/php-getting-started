@@ -1,5 +1,5 @@
 {
-  "require" : {
+  "require": {
     "php": "^8.1",
     "php-di/php-di": "^7.0",
     "slim/slim": "^4.0",
