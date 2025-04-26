@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<p>Got these books from our bookshelf:</p>
+
+<ul>
+{% for book in books %}
+  <li>
+    <p> Title: {{ book.title }} </p>
+    <p> Author: {{ book.author }} </p>
+    <p> Abstract: {{ book.description }} </p>
+    <p> Number of Pages: {{ book.pages }} </p>
+  </li>
+{% else %}
+  <li><em>No books yet</em></li>
+{% endfor %}
+</ul>
+
+{% endblock %}

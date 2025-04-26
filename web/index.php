@@ -36,4 +36,40 @@ $app->get('/', function(Request $request, Response $response, LoggerInterface $l
   return $twig->render($response, 'index.twig');
 });
 
+$app->get('/books', function(Request $request, Response $response, LoggerInterface $logger, Twig $twig, PDO $pdo) {
+    $books = getBooks();
+    return $twig->render($response, 'books.twig', [
+      'books' => $books,
+    ]);
+});
+
+function getBooks() {
+  $books = [
+        [
+            'title' => 'To Kill a Mockingbird',
+            'author' => 'Harper Lee',
+            'description' => 'A novel about the serious issues of rape and racial inequality.',
+            'pages' => 281
+        ],
+        [
+            'title' => '1984',
+            'author' => 'George Orwell',
+            'description' => 'A dystopian novel set in a totalitarian society under constant surveillance.',
+            'pages' => 328
+        ],
+        [
+            'title' => 'The Great Gatsby',
+            'author' => 'F. Scott Fitzgerald',
+            'description' => 'A story about the jazz age and the elusive American dream.',
+            'pages' => 180
+        ],
+        [
+            'title' => 'Brave New World',
+            'author' => 'Aldous Huxley',
+            'description' => 'A novel exploring futuristic society and the loss of individuality.',
+            'pages' => 268
+        ]
+    ];
+}
+
 $app->run();
