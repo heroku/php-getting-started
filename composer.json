@@ -8,8 +8,5 @@
     "monolog/monolog": "^3.0",
     "twig/twig": "^3.0",
     "slim/twig-view": "^3.0"
-  },
-  "require-dev": {
-    "heroku/heroku-buildpack-php": "*"
   }
 }
