@@ -228,3 +228,220 @@ export async function initDatabase(): Promise<void> {
     throw error;
   }
 }
+
+// Admin/Telemetry Functions
+
+export async function getTelemetryData(project: string, options: {
+  from?: Date;
+  to?: Date;
+  period?: string;
+}): Promise<any> {
+  const db = getDb();
+  const { from, to, period = '7d' } = options;
+  
+  // Calculate date range
+  const endDate = to || new Date();
+  const startDate = from || new Date(endDate.getTime() - parsePeriod(period));
+  
+  try {
+    // Get basic metrics
+    const [queryMetrics, clickMetrics] = await Promise.all([
+      db.query(`
+        SELECT 
+          COUNT(*) as total_queries,
+          AVG(response_time_ms) as avg_response_time,
+          COUNT(CASE WHEN results_count = 0 THEN 1 END)::float / COUNT(*) as no_result_rate
+        FROM query_metrics 
+        WHERE project_id = $1 AND created_at >= $2 AND created_at <= $3
+      `, [project, startDate, endDate]),
+      
+      db.query(`
+        SELECT COUNT(*) as total_clicks
+        FROM click_metrics 
+        WHERE project_id = $1 AND created_at >= $2 AND created_at <= $3
+      `, [project, startDate, endDate])
+    ]);
+    
+    const totalQueries = parseInt(queryMetrics.rows[0]?.total_queries || '0');
+    const totalClicks = parseInt(clickMetrics.rows[0]?.total_clicks || '0');
+    
+    return {
+      totalQueries,
+      totalClicks,
+      avgResponseTime: Math.round(queryMetrics.rows[0]?.avg_response_time || 0),
+      avgClickThroughRate: totalQueries > 0 ? totalClicks / totalQueries : 0,
+      noResultRate: parseFloat(queryMetrics.rows[0]?.no_result_rate || '0'),
+      periodStart: startDate,
+      periodEnd: endDate,
+      dataPoints: []
+    };
+  } catch (error) {
+    console.error('Telemetry data error:', error);
+    throw error;
+  }
+}
+
+export async function getNoResultQueries(project: string, options: {
+  limit?: number;
+  period?: string;
+}): Promise<any[]> {
+  const db = getDb();
+  const { limit = 50, period = '7d' } = options;
+  const startDate = new Date(Date.now() - parsePeriod(period));
+  
+  try {
+    const result = await db.query(`
+      SELECT 
+        query,
+        COUNT(*) as count,
+        MAX(created_at) as last_searched
+      FROM query_metrics 
+      WHERE project_id = $1 
+        AND results_count = 0 
+        AND created_at >= $2
+      GROUP BY query
+      ORDER BY count DESC, last_searched DESC
+      LIMIT $3
+    `, [project, startDate, limit]);
+    
+    return result.rows.map(row => ({
+      query: row.query,
+      count: parseInt(row.count),
+      lastSearched: row.last_searched,
+      suggestedSynonyms: [] // TODO: Implement AI-powered synonym suggestions
+    }));
+  } catch (error) {
+    console.error('No-result queries error:', error);
+    throw error;
+  }
+}
+
+export async function getTopQueries(project: string, options: {
+  limit?: number;
+  period?: string;
+  sortBy?: 'count' | 'ctr' | 'response_time';
+}): Promise<any[]> {
+  const db = getDb();
+  const { limit = 20, period = '7d', sortBy = 'count' } = options;
+  const startDate = new Date(Date.now() - parsePeriod(period));
+  
+  try {
+    const result = await db.query(`
+      SELECT 
+        q.query,
+        COUNT(q.*) as count,
+        AVG(q.response_time_ms) as avg_response_time,
+        AVG(q.results_count) as avg_results,
+        MAX(q.created_at) as last_searched,
+        COUNT(c.*) as clicks,
+        CASE WHEN COUNT(q.*) > 0 THEN COUNT(c.*)::float / COUNT(q.*) ELSE 0 END as click_through_rate
+      FROM query_metrics q
+      LEFT JOIN click_metrics c ON q.query = c.query AND q.project_id = c.project_id
+      WHERE q.project_id = $1 AND q.created_at >= $2
+      GROUP BY q.query
+      ORDER BY ${sortBy === 'count' ? 'count' : sortBy === 'ctr' ? 'click_through_rate' : 'avg_response_time'} DESC
+      LIMIT $3
+    `, [project, startDate, limit]);
+    
+    return result.rows.map(row => ({
+      query: row.query,
+      count: parseInt(row.count),
+      avgResponseTime: Math.round(row.avg_response_time || 0),
+      clickThroughRate: parseFloat(row.click_through_rate || '0'),
+      avgResults: Math.round(row.avg_results || 0),
+      lastSearched: row.last_searched
+    }));
+  } catch (error) {
+    console.error('Top queries error:', error);
+    throw error;
+  }
+}
+
+export async function getSynonymSuggestions(project: string, options: {
+  limit?: number;
+  minFrequency?: number;
+}): Promise<any[]> {
+  // TODO: Implement AI-powered synonym mining from no-result queries
+  // This would analyze failed queries and suggest synonyms using LLM
+  return [
+    {
+      sourceQuery: 'typo3 installieren',
+      suggestedSynonyms: ['typo3 installation', 'typo3 setup', 'typo3 einrichten'],
+      confidence: 0.89,
+      impactEstimate: 23,
+      frequency: 23
+    }
+  ];
+}
+
+export async function applySynonymRule(project: string, rule: {
+  sourceTerms: string[];
+  targetTerms: string[];
+  type: 'bidirectional' | 'oneway';
+  autoApply: boolean;
+}): Promise<any> {
+  const db = getDb();
+  const ruleId = `syn_${Date.now()}`;
+  
+  try {
+    await db.query(`
+      INSERT INTO synonyms (id, project_id, terms, type, created_at)
+      VALUES ($1, $2, $3, $4, NOW())
+    `, [ruleId, project, [...rule.sourceTerms, ...rule.targetTerms], rule.type]);
+    
+    return {
+      id: ruleId,
+      sourceTerms: rule.sourceTerms,
+      targetTerms: rule.targetTerms,
+      type: rule.type,
+      status: 'active',
+      createdAt: new Date().toISOString(),
+      autoApplied: rule.autoApply,
+      estimatedQueriesAffected: 42 // TODO: Calculate based on query frequency
+    };
+  } catch (error) {
+    console.error('Apply synonym rule error:', error);
+    throw error;
+  }
+}
+
+// Helper function to parse period strings like "7d", "30d", "1h"
+function parsePeriod(period: string): number {
+  const match = period.match(/^(\d+)([dhm])$/);
+  if (!match) return 7 * 24 * 60 * 60 * 1000; // Default to 7 days
+  
+  const [, num, unit] = match;
+  const value = parseInt(num);
+  
+  switch (unit) {
+    case 'm': return value * 60 * 1000;
+    case 'h': return value * 60 * 60 * 1000;
+    case 'd': return value * 24 * 60 * 60 * 1000;
+    default: return 7 * 24 * 60 * 60 * 1000;
+  }
+}
+
+// Placeholder functions for remaining admin features
+export async function createBoostRule(project: string, rule: any): Promise<any> {
+  return { id: `boost_${Date.now()}`, ...rule, createdAt: new Date().toISOString() };
+}
+
+export async function createDemoteRule(project: string, rule: any): Promise<any> {
+  return { id: `demote_${Date.now()}`, ...rule, createdAt: new Date().toISOString() };
+}
+
+export async function getSearchRules(project: string, options: any): Promise<any[]> {
+  return [];
+}
+
+export async function deleteRule(project: string, ruleId: string): Promise<void> {
+  console.log(`Deleting rule ${ruleId} for project ${project}`);
+}
+
+export async function getABTestResults(project: string, options: any): Promise<any[]> {
+  return [];
+}
+
+export async function toggleABTest(project: string, testName: string, enabled: boolean): Promise<any> {
+  return { id: `ab_${Date.now()}`, testName, enabled, updatedAt: new Date().toISOString() };
+}

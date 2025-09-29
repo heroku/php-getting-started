@@ -100,28 +100,70 @@ export async function embed(text: string): Promise<number[]> {
 }
 
 /**
- * Generate answer using LLM
+ * Generate answer using LLM with PII redaction
  */
-export async function generateAnswer(prompt: string): Promise<string> {
+export async function generateAnswer(prompt: string, options: {
+  redactPII?: boolean;
+  auditLog?: boolean;
+  maxTokens?: number;
+  temperature?: number;
+} = {}): Promise<string> {
   const config = getConfig();
+  const { redactPII = true, auditLog = true, maxTokens = 1000, temperature = 0.7 } = options;
+  
+  // PII Redaction pre-processing
+  let processedPrompt = prompt;
+  let redactedEntities: string[] = [];
+  
+  if (redactPII) {
+    const redactionResult = redactPersonalData(prompt);
+    processedPrompt = redactionResult.redactedText;
+    redactedEntities = redactionResult.entities;
+  }
+  
+  // Audit logging
+  if (auditLog) {
+    await logLLMRequest({
+      provider: config.provider,
+      promptLength: processedPrompt.length,
+      redactedEntities,
+      timestamp: new Date().toISOString()
+    });
+  }
   
   try {
+    let answer: string;
+    
     switch (config.provider) {
       case 'openai':
-        return await generateOpenAI(prompt, config);
+        answer = await generateOpenAI(processedPrompt, config, { maxTokens, temperature });
       case 'azure':
-        return await generateAzure(prompt, config);
+        answer = await generateAzure(processedPrompt, config, { maxTokens, temperature });
       case 'ollama':
-        return await generateOllama(prompt, config);
+        answer = await generateOllama(processedPrompt, config, { maxTokens, temperature });
       case 'huggingface':
-        return await generateHuggingFace(prompt, config);
+        answer = await generateHuggingFace(processedPrompt, config, { maxTokens, temperature });
       default:
-        return generateStub(prompt);
+        answer = generateStub(processedPrompt);
     }
+    
+    // Post-process answer to restore any redacted entities if needed
+    return restoreRedactedEntities(answer, redactedEntities);
+    
   } catch (error) {
     console.error(`Answer generation failed with ${config.provider}:`, error);
+    
+    // Audit log the error
+    if (auditLog) {
+      await logLLMError({
+        provider: config.provider,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
     // Fallback to stub in case of errors
-    return generateStub(prompt);
+    return generateStub(processedPrompt);
   }
 }
 
@@ -167,7 +209,7 @@ async function embedOpenAI(text: string, config: ProviderConfig): Promise<number
   return response.data[0].embedding;
 }
 
-async function generateOpenAI(prompt: string, config: ProviderConfig): Promise<string> {
+async function generateOpenAI(prompt: string, config: ProviderConfig, options: { maxTokens?: number; temperature?: number } = {}): Promise<string> {
   if (!openaiClient) {
     openaiClient = new OpenAI({
       apiKey: config.apiKey,
