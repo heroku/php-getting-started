@@ -1,279 +1,497 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { enhancedApiKeyAuth } from '../middleware/security.js';
-import { getDb } from '../db.js';
-import crypto from 'crypto';
+import { authMiddleware } from '../middleware/auth.js';
+import { 
+  getTelemetryData, 
+  getNoResultQueries, 
+  getTopQueries, 
+  getClickThroughRates,
+  getSynonymSuggestions,
+  applySynonymRule,
+  createBoostRule,
+  createDemoteRule,
+  getSearchRules,
+  deleteRule,
+  getABTestResults,
+  toggleABTest
+} from '../db.js';
+import { 
+  createJsonApiResponse, 
+  createJsonApiError, 
+  createHttpError 
+} from '../utils/jsonapi.js';
 
 export const router = new Hono();
 
-// Schema for creating API keys
-const createApiKeySchema = z.object({
-  name: z.string().min(1).max(100),
-  scope: z.enum(['read', 'write', 'admin']),
-  project_id: z.string().optional(),
-  expires_in_days: z.number().int().min(1).max(365).optional()
-});
+// Telemetry Dashboard Endpoints
 
-// Schema for updating API keys
-const updateApiKeySchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  expires_in_days: z.number().int().min(1).max(365).optional()
-});
-
-// Create API key
-router.post('/admin/api-keys',
-  enhancedApiKeyAuth('admin'),
-  zValidator('json', createApiKeySchema),
+// Get overall telemetry data
+router.get('/telemetry/:project',
+  authMiddleware.requireKey('admin'),
   async (c) => {
     try {
-      const { name, scope, project_id, expires_in_days } = await c.req.json();
+      const { project } = c.req.param();
+      const { from, to, period = '7d' } = c.req.query();
       
-      // Generate secure API key
-      const apiKey = generateApiKey();
-      const keyHash = crypto.createHash('sha256').update(apiKey).digest('hex');
-      const keyId = crypto.randomUUID();
-      
-      const expiresAt = expires_in_days 
-        ? new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000).toISOString()
-        : null;
-
-      const db = getDb();
-      await db.query(`
-        INSERT INTO api_keys (id, key_hash, scope, project_id, name, expires_at)
-        VALUES ($1, $2, $3, $4, $5, $6)
-      `, [keyId, keyHash, scope, project_id, name, expiresAt]);
-
-      return c.json({
-        id: keyId,
-        key: apiKey, // Only returned once!
-        name,
-        scope,
-        project_id,
-        expires_at: expiresAt,
-        created_at: new Date().toISOString(),
-        warning: 'Store this key securely - it will not be shown again!'
+      const telemetryData = await getTelemetryData(project, {
+        from: from ? new Date(from) : undefined,
+        to: to ? new Date(to) : undefined,
+        period
       });
+
+      const resource = {
+        type: 'telemetry',
+        id: project,
+        attributes: {
+          total_queries: telemetryData.totalQueries,
+          total_clicks: telemetryData.totalClicks,
+          avg_response_time: telemetryData.avgResponseTime,
+          avg_ctr: telemetryData.avgClickThroughRate,
+          no_result_rate: telemetryData.noResultRate,
+          period,
+          generated_at: new Date().toISOString()
+        },
+        meta: {
+          period_start: telemetryData.periodStart,
+          period_end: telemetryData.periodEnd,
+          data_points: telemetryData.dataPoints
+        }
+      };
+
+      return c.json(createJsonApiResponse(resource));
     } catch (error) {
-      console.error('API key creation error:', error);
-      return c.json({ 
-        error: 'Failed to create API key',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }, 500);
+      console.error('Telemetry error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to fetch telemetry data')), 500);
     }
   }
 );
 
-// List API keys
-router.get('/admin/api-keys',
-  enhancedApiKeyAuth('admin'),
+// Get no-result queries for synonym mining
+router.get('/no-result-queries/:project',
+  authMiddleware.requireKey('admin'),
   async (c) => {
     try {
-      const db = getDb();
-      const result = await db.query(`
-        SELECT id, scope, project_id, name, expires_at, created_at, last_used_at
-        FROM api_keys
-        ORDER BY created_at DESC
-      `);
+      const { project } = c.req.param();
+      const { limit = '50', period = '7d' } = c.req.query();
+      
+      const noResultQueries = await getNoResultQueries(project, {
+        limit: parseInt(limit),
+        period
+      });
 
-      const keys = result.rows.map(row => ({
-        ...row,
-        is_expired: row.expires_at ? new Date(row.expires_at) < new Date() : false,
-        key_preview: '***' + crypto.createHash('sha256').update(row.id).digest('hex').slice(-8)
+      const resources = noResultQueries.map((query, index) => ({
+        type: 'no-result-query',
+        id: `${project}-${index}`,
+        attributes: {
+          query: query.query,
+          count: query.count,
+          last_searched: query.lastSearched,
+          suggested_synonyms: query.suggestedSynonyms || []
+        },
+        meta: {
+          potential_impact: query.count * 0.1, // Estimated improvement if fixed
+          priority: query.count > 10 ? 'high' : query.count > 5 ? 'medium' : 'low'
+        }
       }));
 
-      return c.json({ keys });
+      const meta = {
+        total_queries: noResultQueries.length,
+        period,
+        generated_at: new Date().toISOString()
+      };
+
+      return c.json(createJsonApiResponse(resources, { meta }));
     } catch (error) {
-      console.error('API key listing error:', error);
-      return c.json({ 
-        error: 'Failed to list API keys',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }, 500);
+      console.error('No-result queries error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to fetch no-result queries')), 500);
     }
   }
 );
 
-// Update API key
-router.patch('/admin/api-keys/:keyId',
-  enhancedApiKeyAuth('admin'),
-  zValidator('json', updateApiKeySchema),
+// Get top queries with performance metrics
+router.get('/top-queries/:project',
+  authMiddleware.requireKey('admin'),
   async (c) => {
     try {
-      const keyId = c.req.param('keyId');
-      const updates = await c.req.json();
+      const { project } = c.req.param();
+      const { limit = '20', period = '7d', sort = 'count' } = c.req.query();
       
-      const setParts = [];
-      const values = [];
-      let paramIndex = 1;
-
-      if (updates.name) {
-        setParts.push(`name = $${paramIndex++}`);
-        values.push(updates.name);
-      }
-
-      if (updates.expires_in_days) {
-        const expiresAt = new Date(Date.now() + updates.expires_in_days * 24 * 60 * 60 * 1000).toISOString();
-        setParts.push(`expires_at = $${paramIndex++}`);
-        values.push(expiresAt);
-      }
-
-      if (setParts.length === 0) {
-        return c.json({ error: 'No updates provided' }, 400);
-      }
-
-      values.push(keyId);
-      
-      const db = getDb();
-      const result = await db.query(`
-        UPDATE api_keys 
-        SET ${setParts.join(', ')}, updated_at = NOW()
-        WHERE id = $${paramIndex}
-        RETURNING id, name, scope, project_id, expires_at, updated_at
-      `, values);
-
-      if (result.rows.length === 0) {
-        return c.json({ error: 'API key not found' }, 404);
-      }
-
-      return c.json({ key: result.rows[0] });
-    } catch (error) {
-      console.error('API key update error:', error);
-      return c.json({ 
-        error: 'Failed to update API key',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }, 500);
-    }
-  }
-);
-
-// Delete API key
-router.delete('/admin/api-keys/:keyId',
-  enhancedApiKeyAuth('admin'),
-  async (c) => {
-    try {
-      const keyId = c.req.param('keyId');
-      
-      const db = getDb();
-      const result = await db.query('DELETE FROM api_keys WHERE id = $1 RETURNING id, name', [keyId]);
-
-      if (result.rows.length === 0) {
-        return c.json({ error: 'API key not found' }, 404);
-      }
-
-      return c.json({ 
-        success: true,
-        deleted: result.rows[0]
+      const topQueries = await getTopQueries(project, {
+        limit: parseInt(limit),
+        period,
+        sortBy: sort as 'count' | 'ctr' | 'response_time'
       });
+
+      const resources = topQueries.map((query, index) => ({
+        type: 'top-query',
+        id: `${project}-${index}`,
+        attributes: {
+          query: query.query,
+          count: query.count,
+          avg_response_time: query.avgResponseTime,
+          click_through_rate: query.clickThroughRate,
+          avg_results: query.avgResults,
+          last_searched: query.lastSearched
+        },
+        meta: {
+          rank: index + 1,
+          performance_score: calculatePerformanceScore(query),
+          needs_optimization: query.avgResponseTime > 1000 || query.clickThroughRate < 0.1
+        }
+      }));
+
+      const meta = {
+        total_queries: topQueries.length,
+        period,
+        sort_by: sort,
+        generated_at: new Date().toISOString()
+      };
+
+      return c.json(createJsonApiResponse(resources, { meta }));
     } catch (error) {
-      console.error('API key deletion error:', error);
-      return c.json({ 
-        error: 'Failed to delete API key',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }, 500);
+      console.error('Top queries error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to fetch top queries')), 500);
     }
   }
 );
 
-// Get API key usage statistics
-router.get('/admin/api-keys/:keyId/usage',
-  enhancedApiKeyAuth('admin'),
+// Synonym Mining and Rules Engine
+
+// Get AI-suggested synonyms from telemetry
+router.get('/synonym-suggestions/:project',
+  authMiddleware.requireKey('admin'),
   async (c) => {
     try {
-      const keyId = c.req.param('keyId');
-      const { from, to } = c.req.query();
+      const { project } = c.req.param();
+      const { limit = '10', min_frequency = '5' } = c.req.query();
       
-      // TODO: Implement usage tracking from request logs
-      // This would require storing request logs with API key references
-      
-      return c.json({
-        key_id: keyId,
-        period: { from, to },
-        total_requests: 0,
-        requests_by_day: [],
-        endpoints_used: [],
-        last_activity: null
+      const suggestions = await getSynonymSuggestions(project, {
+        limit: parseInt(limit),
+        minFrequency: parseInt(min_frequency)
       });
+
+      const resources = suggestions.map((suggestion, index) => ({
+        type: 'synonym-suggestion',
+        id: `${project}-${index}`,
+        attributes: {
+          source_query: suggestion.sourceQuery,
+          suggested_synonyms: suggestion.suggestedSynonyms,
+          confidence: suggestion.confidence,
+          impact_estimate: suggestion.impactEstimate,
+          frequency: suggestion.frequency
+        },
+        meta: {
+          auto_applicable: suggestion.confidence > 0.8,
+          review_required: suggestion.confidence < 0.6
+        }
+      }));
+
+      const meta = {
+        total_suggestions: suggestions.length,
+        generated_at: new Date().toISOString()
+      };
+
+      return c.json(createJsonApiResponse(resources, { meta }));
     } catch (error) {
-      console.error('API key usage error:', error);
-      return c.json({ 
-        error: 'Failed to get API key usage',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      }, 500);
+      console.error('Synonym suggestions error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to fetch synonym suggestions')), 500);
     }
   }
 );
 
-// System health check (admin only)
-router.get('/admin/health',
-  enhancedApiKeyAuth('admin'),
+// Apply synonym rule
+const applySynonymSchema = z.object({
+  source_terms: z.array(z.string()).min(1),
+  target_terms: z.array(z.string()).min(1),
+  type: z.enum(['bidirectional', 'oneway']).default('bidirectional'),
+  auto_apply: z.boolean().default(false)
+});
+
+router.post('/synonym-rules/:project',
+  authMiddleware.requireKey('admin'),
+  zValidator('json', applySynonymSchema),
   async (c) => {
     try {
-      const db = getDb();
+      const { project } = c.req.param();
+      const { source_terms, target_terms, type, auto_apply } = await c.req.json();
       
-      // Check database
-      const dbStart = Date.now();
-      await db.query('SELECT 1');
-      const dbTime = Date.now() - dbStart;
+      const rule = await applySynonymRule(project, {
+        sourceTerms: source_terms,
+        targetTerms: target_terms,
+        type,
+        autoApply: auto_apply
+      });
 
-      // Check Meilisearch
-      const meiliStart = Date.now();
-      const meiliUrl = process.env.MEILI_URL || 'http://localhost:7700';
-      let meiliStatus = 'unknown';
-      let meiliTime = 0;
+      const resource = {
+        type: 'synonym-rule',
+        id: rule.id,
+        attributes: {
+          source_terms: rule.sourceTerms,
+          target_terms: rule.targetTerms,
+          type: rule.type,
+          status: rule.status,
+          created_at: rule.createdAt,
+          auto_applied: rule.autoApplied
+        },
+        meta: {
+          estimated_queries_affected: rule.estimatedQueriesAffected
+        }
+      };
+
+      return c.json(createJsonApiResponse(resource), 201);
+    } catch (error) {
+      console.error('Apply synonym rule error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to apply synonym rule')), 500);
+    }
+  }
+);
+
+// Boost/Demote Rules Engine
+
+const boostRuleSchema = z.object({
+  query_pattern: z.string(),
+  document_ids: z.array(z.string()).optional(),
+  collections: z.array(z.string()).optional(),
+  boost_factor: z.number().min(0.1).max(10).default(2.0),
+  conditions: z.record(z.any()).optional(),
+  active: z.boolean().default(true)
+});
+
+router.post('/boost-rules/:project',
+  authMiddleware.requireKey('admin'),
+  zValidator('json', boostRuleSchema),
+  async (c) => {
+    try {
+      const { project } = c.req.param();
+      const payload = await c.req.json();
       
-      try {
-        const response = await fetch(`${meiliUrl}/health`);
-        meiliTime = Date.now() - meiliStart;
-        meiliStatus = response.ok ? 'healthy' : 'unhealthy';
-      } catch (error) {
-        meiliTime = Date.now() - meiliStart;
-        meiliStatus = 'error';
-      }
+      const rule = await createBoostRule(project, {
+        queryPattern: payload.query_pattern,
+        documentIds: payload.document_ids,
+        collections: payload.collections,
+        boostFactor: payload.boost_factor,
+        conditions: payload.conditions,
+        active: payload.active
+      });
 
-      // System stats
-      const memoryUsage = process.memoryUsage();
-      const uptime = process.uptime();
+      const resource = {
+        type: 'boost-rule',
+        id: rule.id,
+        attributes: {
+          query_pattern: rule.queryPattern,
+          document_ids: rule.documentIds,
+          collections: rule.collections,
+          boost_factor: rule.boostFactor,
+          conditions: rule.conditions,
+          active: rule.active,
+          created_at: rule.createdAt,
+          queries_matched: rule.queriesMatched
+        }
+      };
 
-      return c.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        services: {
-          database: {
-            status: 'healthy',
-            response_time_ms: dbTime
-          },
-          meilisearch: {
-            status: meiliStatus,
-            response_time_ms: meiliTime,
-            url: meiliUrl
+      return c.json(createJsonApiResponse(resource), 201);
+    } catch (error) {
+      console.error('Create boost rule error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to create boost rule')), 500);
+    }
+  }
+);
+
+const demoteRuleSchema = z.object({
+  query_pattern: z.string(),
+  document_ids: z.array(z.string()).optional(),
+  collections: z.array(z.string()).optional(),
+  demote_factor: z.number().min(0.1).max(1).default(0.5),
+  conditions: z.record(z.any()).optional(),
+  active: z.boolean().default(true)
+});
+
+router.post('/demote-rules/:project',
+  authMiddleware.requireKey('admin'),
+  zValidator('json', demoteRuleSchema),
+  async (c) => {
+    try {
+      const { project } = c.req.param();
+      const payload = await c.req.json();
+      
+      const rule = await createDemoteRule(project, {
+        queryPattern: payload.query_pattern,
+        documentIds: payload.document_ids,
+        collections: payload.collections,
+        demoteFactor: payload.demote_factor,
+        conditions: payload.conditions,
+        active: payload.active
+      });
+
+      const resource = {
+        type: 'demote-rule',
+        id: rule.id,
+        attributes: {
+          query_pattern: rule.queryPattern,
+          document_ids: rule.documentIds,
+          collections: rule.collections,
+          demote_factor: rule.demoteFactor,
+          conditions: rule.conditions,
+          active: rule.active,
+          created_at: rule.createdAt,
+          queries_matched: rule.queriesMatched
+        }
+      };
+
+      return c.json(createJsonApiResponse(resource), 201);
+    } catch (error) {
+      console.error('Create demote rule error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to create demote rule')), 500);
+    }
+  }
+);
+
+// Get all search rules
+router.get('/rules/:project',
+  authMiddleware.requireKey('admin'),
+  async (c) => {
+    try {
+      const { project } = c.req.param();
+      const { type, active } = c.req.query();
+      
+      const rules = await getSearchRules(project, {
+        type: type as 'boost' | 'demote' | 'synonym' | undefined,
+        active: active ? active === 'true' : undefined
+      });
+
+      const resources = rules.map(rule => ({
+        type: rule.type + '-rule',
+        id: rule.id,
+        attributes: {
+          ...rule,
+          created_at: rule.createdAt,
+          updated_at: rule.updatedAt
+        },
+        meta: {
+          performance_impact: rule.performanceImpact,
+          queries_affected: rule.queriesAffected
+        }
+      }));
+
+      const meta = {
+        total_rules: rules.length,
+        active_rules: rules.filter(r => r.active).length,
+        generated_at: new Date().toISOString()
+      };
+
+      return c.json(createJsonApiResponse(resources, { meta }));
+    } catch (error) {
+      console.error('Get rules error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to fetch rules')), 500);
+    }
+  }
+);
+
+// Delete rule
+router.delete('/rules/:project/:ruleId',
+  authMiddleware.requireKey('admin'),
+  async (c) => {
+    try {
+      const { project, ruleId } = c.req.param();
+      
+      await deleteRule(project, ruleId);
+      
+      return c.json({ message: 'Rule deleted successfully' });
+    } catch (error) {
+      console.error('Delete rule error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to delete rule')), 500);
+    }
+  }
+);
+
+// A/B Testing for Re-ranker
+
+// Get A/B test results
+router.get('/ab-tests/:project',
+  authMiddleware.requireKey('admin'),
+  async (c) => {
+    try {
+      const { project } = c.req.param();
+      const { period = '7d' } = c.req.query();
+      
+      const abTestResults = await getABTestResults(project, { period });
+
+      const resources = abTestResults.map(test => ({
+        type: 'ab-test',
+        id: test.id,
+        attributes: {
+          name: test.name,
+          description: test.description,
+          variant_a: test.variantA,
+          variant_b: test.variantB,
+          traffic_split: test.trafficSplit,
+          status: test.status,
+          start_date: test.startDate,
+          end_date: test.endDate,
+          results: {
+            variant_a_ctr: test.results.variantACTR,
+            variant_b_ctr: test.results.variantBCTR,
+            statistical_significance: test.results.statisticalSignificance,
+            winner: test.results.winner,
+            improvement: test.results.improvement
           }
         },
-        system: {
-          uptime_seconds: Math.floor(uptime),
-          memory: {
-            rss: Math.floor(memoryUsage.rss / 1024 / 1024) + 'MB',
-            heap_used: Math.floor(memoryUsage.heapUsed / 1024 / 1024) + 'MB',
-            heap_total: Math.floor(memoryUsage.heapTotal / 1024 / 1024) + 'MB'
-          },
-          node_version: process.version,
-          environment: process.env.NODE_ENV || 'development'
+        meta: {
+          sample_size_a: test.results.sampleSizeA,
+          sample_size_b: test.results.sampleSizeB,
+          confidence_level: test.results.confidenceLevel,
+          is_conclusive: test.results.isConclusive
         }
-      });
+      }));
+
+      return c.json(createJsonApiResponse(resources));
     } catch (error) {
-      console.error('Health check error:', error);
-      return c.json({
-        status: 'unhealthy',
-        timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }, 500);
+      console.error('A/B test results error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to fetch A/B test results')), 500);
     }
   }
 );
 
-function generateApiKey(): string {
-  // Generate a secure, URL-safe API key
-  const prefix = 'pc_';
-  const randomBytes = crypto.randomBytes(32);
-  const key = randomBytes.toString('base64url');
-  return prefix + key;
+// Toggle A/B test
+const toggleABTestSchema = z.object({
+  test_name: z.string(),
+  enabled: z.boolean()
+});
+
+router.post('/ab-tests/:project/toggle',
+  authMiddleware.requireKey('admin'),
+  zValidator('json', toggleABTestSchema),
+  async (c) => {
+    try {
+      const { project } = c.req.param();
+      const { test_name, enabled } = await c.req.json();
+      
+      const result = await toggleABTest(project, test_name, enabled);
+
+      const resource = {
+        type: 'ab-test-toggle',
+        id: result.id,
+        attributes: {
+          test_name: result.testName,
+          enabled: result.enabled,
+          updated_at: result.updatedAt
+        }
+      };
+
+      return c.json(createJsonApiResponse(resource));
+    } catch (error) {
+      console.error('Toggle A/B test error:', error);
+      return c.json(createJsonApiError(createHttpError(500, 'Failed to toggle A/B test')), 500);
+    }
+  }
+);
+
+// Helper function to calculate performance score
+function calculatePerformanceScore(query: any): number {
+  const responseTimeScore = Math.max(0, 1 - (query.avgResponseTime / 2000)); // 2s = 0 score
+  const ctrScore = Math.min(1, query.clickThroughRate * 5); // 0.2 CTR = 1.0 score
+  const resultsScore = Math.min(1, query.avgResults / 10); // 10 results = 1.0 score
+  
+  return Math.round((responseTimeScore * 0.3 + ctrScore * 0.5 + resultsScore * 0.2) * 100) / 100;
 }
