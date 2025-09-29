@@ -1,0 +1,173 @@
+# pixelcoda Search TypoScript Setup
+
+
+# Content Element Rendering Definition for list plugin
+tt_content.list.20.pixelcodasearch_search = USER
+tt_content.list.20.pixelcodasearch_search {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = PixelcodaSearch
+    pluginName = Search
+    vendorName = PixelCoda
+    controller = Search
+    action = index
+    switchableControllerActions {
+        Search {
+            1 = index
+            2 = search
+            3 = ask
+            4 = results
+        }
+    }
+}
+
+# Search Results Plugin
+tt_content.list.20.pixelcodasearch_searchresults = USER
+tt_content.list.20.pixelcodasearch_searchresults {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = PixelcodaSearch
+    pluginName = SearchResults
+    vendorName = PixelCoda
+    controller = Search
+    action = search
+    switchableControllerActions {
+        Search {
+            1 = search
+        }
+    }
+}
+
+# Content Element Rendering - Standard Mode with Fluid Template
+tt_content.pixelcodasearch_search = FLUIDTEMPLATE
+tt_content.pixelcodasearch_search {
+    templateName = Search
+    templateRootPaths {
+        10 = EXT:pixelcoda_search/Resources/Private/Templates/ContentElements/
+    }
+    layoutRootPaths {
+        10 = EXT:pixelcoda_search/Resources/Private/Layouts/ContentElements/
+    }
+    partialRootPaths {
+        10 = EXT:pixelcoda_search/Resources/Private/Partials/ContentElements/
+    }
+    dataProcessing {
+        10 = TYPO3\CMS\Frontend\DataProcessing\FlexFormProcessor
+        10 {
+            fieldName = pi_flexform
+            as = flexform_data
+        }
+    }
+    settings < plugin.tx_pixelcodasearch_search.settings
+    variables {
+        settings < plugin.tx_pixelcodasearch_search.settings
+    }
+}
+
+# Debug: Add a simple test to verify TypoScript is loaded
+page.headerData.999 = TEXT
+page.headerData.999.value = <!-- pixelcoda Search TypoScript loaded -->
+
+# Clean configuration - using native Headless JSON structure
+
+plugin.tx_pixelcodasearch_search {
+    view {
+        templateRootPaths {
+            0 = EXT:pixelcoda_search/Resources/Private/Templates/
+            10 = {$plugin.tx_pixelcodasearch_search.view.templateRootPath}
+        }
+        partialRootPaths {
+            0 = EXT:pixelcoda_search/Resources/Private/Partials/
+            10 = {$plugin.tx_pixelcodasearch_search.view.partialRootPath}
+        }
+        layoutRootPaths {
+            0 = EXT:pixelcoda_search/Resources/Private/Layouts/
+            10 = {$plugin.tx_pixelcodasearch_search.view.layoutRootPath}
+        }
+    }
+    
+    persistence {
+        storagePid = {$plugin.tx_pixelcodasearch_search.persistence.storagePid}
+    }
+    
+    settings {
+        mode = {$plugin.tx_pixelcodasearch_search.settings.mode}
+        resultsPerPage = {$plugin.tx_pixelcodasearch_search.settings.resultsPerPage}
+        maxPassages = {$plugin.tx_pixelcodasearch_search.settings.maxPassages}
+        enableSuggestions = {$plugin.tx_pixelcodasearch_search.settings.enableSuggestions}
+        enableAsk = {$plugin.tx_pixelcodasearch_search.settings.enableAsk}
+        showDebug = {$plugin.tx_pixelcodasearch_search.settings.showDebug}
+        collections = {$plugin.tx_pixelcodasearch_search.settings.collections}
+        placeholder = {$plugin.tx_pixelcodasearch_search.settings.placeholder}
+        template = {$plugin.tx_pixelcodasearch_search.settings.template}
+        cssClass = {$plugin.tx_pixelcodasearch_search.settings.cssClass}
+        enableMetrics = {$plugin.tx_pixelcodasearch_search.settings.enableMetrics}
+        minQueryLength = {$plugin.tx_pixelcodasearch_search.settings.minQueryLength}
+        debounceMs = {$plugin.tx_pixelcodasearch_search.settings.debounceMs}
+    }
+}
+
+# Page type for JSON API responses (headless mode)
+pixelcoda_search_api = PAGE
+pixelcoda_search_api {
+    typeNum = 1699
+    config {
+        disableAllHeaderCode = 1
+        additionalHeaders.10.header = Content-Type: application/vnd.api+json
+        additionalHeaders.20.header = X-Powered-By: pixelcoda Search v2.0
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+    }
+    
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = PixelcodaSearch
+        pluginName = Search
+        vendorName = PixelCoda
+        controller = Search
+        action = search
+        switchableControllerActions {
+            Search {
+                1 = search
+                2 = ask
+            }
+        }
+    }
+}
+
+# Include CSS and JavaScript for classic mode
+page {
+    includeCSS {
+        pixelcodaSearch = EXT:pixelcoda_search/Resources/Public/Css/search.css
+        pixelcodaSearch {
+            media = all
+            disableCompression = 1
+        }
+    }
+    
+    includeJSFooter {
+        pixelcodaSearch = EXT:pixelcoda_search/Resources/Public/JavaScript/search.js
+        pixelcodaSearch {
+            async = 1
+            defer = 1
+        }
+    }
+}
+
+# AJAX endpoint for suggestions
+pixelcoda_suggest = PAGE
+pixelcoda_suggest {
+    typeNum = 1700
+    config {
+        disableAllHeaderCode = 1
+        additionalHeaders.10.header = Content-Type: application/json
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+    }
+    
+    10 = USER
+    10 {
+        userFunc = PixelCoda\PixelcodaSearch\Eid\SuggestEid->processRequest
+    }
+}

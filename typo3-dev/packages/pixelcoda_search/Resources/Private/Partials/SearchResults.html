@@ -1,0 +1,179 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<!-- Accessible Search Results List -->
+<div class="search-results-container">
+    <f:if condition="{results}">
+        <f:then>
+            <!-- Results Header -->
+            <div class="results-header">
+                <h2 id="search-results-heading" class="results-title">
+                    {f:translate(key: 'search.results.title', default: 'Suchergebnisse')}
+                </h2>
+                <p class="results-count" aria-live="polite">
+                    {f:translate(key: 'search.results.showing', default: 'Zeige {0} von {1} Ergebnissen', arguments: {0: '{results -> f:count()}', 1: '{meta.pagination.total}'})}
+                </p>
+            </div>
+
+            <!-- Results List -->
+            <ul class="search-results-list" 
+                role="list"
+                aria-labelledby="search-results-heading">
+                
+                <f:for each="{results}" as="result" iteration="iteration">
+                    <li class="search-result-item" 
+                        role="listitem"
+                        data-result-id="{result.id}"
+                        data-position="{iteration.index}">
+                        
+                        <article class="search-result" 
+                                 itemscope 
+                                 itemtype="https://schema.org/SearchResult">
+                            
+                            <!-- Result Header -->
+                            <header class="result-header">
+                                <h3 class="result-title" itemprop="name">
+                                    <f:if condition="{result.attributes.url}">
+                                        <f:then>
+                                            <a href="{result.attributes.url}" 
+                                               class="result-link"
+                                               onclick="PixelcodaSearch.logClick('{query}', '{result.id}', {iteration.index}, '{result.attributes.url}')"
+                                               itemprop="url">
+                                                {result.attributes.title}
+                                            </a>
+                                        </f:then>
+                                        <f:else>
+                                            <span>{result.attributes.title}</span>
+                                        </f:else>
+                                    </f:if>
+                                </h3>
+                                
+                                <!-- URL display -->
+                                <f:if condition="{result.attributes.url}">
+                                    <p class="result-url" itemprop="url">
+                                        {result.attributes.url}
+                                    </p>
+                                </f:if>
+                            </header>
+
+                            <!-- Result Content -->
+                            <div class="result-content">
+                                <f:if condition="{result.attributes.summary}">
+                                    <f:then>
+                                        <p class="result-summary" itemprop="description">
+                                            {result.attributes.summary -> f:format.crop(maxCharacters: 300, append: '...')}
+                                        </p>
+                                    </f:then>
+                                    <f:else>
+                                        <p class="result-content-excerpt" itemprop="description">
+                                            {result.attributes.content -> f:format.crop(maxCharacters: 300, append: '...') -> f:format.stripTags()}
+                                        </p>
+                                    </f:else>
+                                </f:if>
+                            </div>
+
+                            <!-- Result Meta Information -->
+                            <footer class="result-meta">
+                                <div class="result-meta-info">
+                                    <f:if condition="{result.attributes.collection}">
+                                        <span class="result-collection" 
+                                              title="{f:translate(key: 'search.result.collection', default: 'Bereich')}">
+                                            <f:image src="EXT:pixelcoda_search/Resources/Public/Icons/Collection.svg" 
+                                                     alt="" width="16" height="16" />
+                                            {f:translate(key: 'collections.{result.attributes.collection}', default: '{result.attributes.collection}')}
+                                        </span>
+                                    </f:if>
+                                    
+                                    <f:if condition="{result.attributes.language}">
+                                        <span class="result-language"
+                                              title="{f:translate(key: 'search.result.language', default: 'Sprache')}">
+                                            <f:image src="EXT:pixelcoda_search/Resources/Public/Icons/Language.svg" 
+                                                     alt="" width="16" height="16" />
+                                            {result.attributes.language}
+                                        </span>
+                                    </f:if>
+
+                                    <f:if condition="{settings.showDebug} && {result.meta.relevance}">
+                                        <span class="result-score" 
+                                              title="{f:translate(key: 'search.result.relevance', default: 'Relevanz')}">
+                                            Score: {result.meta.relevance -> f:format.number(decimals: 3)}
+                                        </span>
+                                    </f:if>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="result-actions">
+                                    <f:if condition="{result.attributes.url}">
+                                        <a href="{result.attributes.url}" 
+                                           class="result-action-link"
+                                           onclick="PixelcodaSearch.logClick('{query}', '{result.id}', {iteration.index}, '{result.attributes.url}')"
+                                           target="_blank"
+                                           rel="noopener">
+                                            {f:translate(key: 'search.result.open', default: 'Öffnen')}
+                                            <span class="sr-only"> (öffnet in neuem Tab)</span>
+                                        </a>
+                                    </f:if>
+                                </div>
+                            </footer>
+                        </article>
+                    </li>
+                </f:for>
+            </ul>
+
+            <!-- Load More Button (for infinite scroll or pagination) -->
+            <f:if condition="{pagination.hasNext}">
+                <div class="search-load-more">
+                    <button type="button" 
+                            class="load-more-button"
+                            data-page="{pagination.next}"
+                            data-query="{query}"
+                            aria-describedby="load-more-help">
+                        {f:translate(key: 'search.loadMore', default: 'Weitere Ergebnisse laden')}
+                    </button>
+                    <p id="load-more-help" class="sr-only">
+                        {f:translate(key: 'search.loadMore.help', default: 'Lädt weitere Suchergebnisse für die aktuelle Suche')}
+                    </p>
+                </div>
+            </f:if>
+        </f:then>
+        <f:else>
+            <!-- No results state -->
+            <div class="search-no-results" role="main">
+                <h2>{f:translate(key: 'search.noResults.title', default: 'Keine Ergebnisse gefunden')}</h2>
+                <p>{f:translate(key: 'search.noResults.message', default: 'Ihre Suche nach "{0}" ergab keine Treffer.', arguments: {0: query})}</p>
+                
+                <div class="no-results-help">
+                    <h3>{f:translate(key: 'search.noResults.suggestions.title', default: 'Versuchen Sie folgendes:')}</h3>
+                    <ul>
+                        <li>{f:translate(key: 'search.noResults.suggestions.spelling', default: 'Überprüfen Sie die Rechtschreibung')}</li>
+                        <li>{f:translate(key: 'search.noResults.suggestions.keywords', default: 'Verwenden Sie andere Suchbegriffe')}</li>
+                        <li>{f:translate(key: 'search.noResults.suggestions.general', default: 'Verwenden Sie allgemeinere Begriffe')}</li>
+                        <li>{f:translate(key: 'search.noResults.suggestions.filters', default: 'Entfernen Sie Filter oder Einschränkungen')}</li>
+                    </ul>
+                </div>
+
+                <!-- Try Again Form -->
+                <div class="search-try-again">
+                    <h3>{f:translate(key: 'search.tryAgain.title', default: 'Neue Suche starten')}</h3>
+                    <f:render partial="SearchForm" arguments="{
+                        query: '', 
+                        settings: settings, 
+                        placeholder: 'Neuen Suchbegriff eingeben...',
+                        collections: collections,
+                        languages: languages
+                    }" />
+                </div>
+            </div>
+        </f:else>
+    </f:if>
+
+    <!-- Back to Search Link -->
+    <div class="search-navigation">
+        <a href="{f:uri.action(action: 'index')}" class="back-to-search">
+            <f:image src="EXT:pixelcoda_search/Resources/Public/Icons/ArrowLeft.svg" 
+                     alt="" width="16" height="16" />
+            {f:translate(key: 'search.backToSearch', default: 'Zurück zur Suche')}
+        </a>
+    </div>
+</div>
+
+</html>

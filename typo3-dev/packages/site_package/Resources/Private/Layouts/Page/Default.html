@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{data.title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <f:if condition="{data.description}">
+        <meta name="description" content="{data.description}">
+    </f:if>
+</head>
+
+<body>
+    <f:render section="Main" />
+</body>
+
+</html>

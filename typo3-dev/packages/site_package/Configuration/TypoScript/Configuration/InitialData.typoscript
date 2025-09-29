@@ -1,0 +1,20 @@
+// extend initial data defined for in the headless package
+// @see vendor/friendsoftypo3/headless/Configuration/TypoScript/Configuration/InitialDataConfiguration.typoscript
+initialData {
+    10 {
+        fields {
+            externalLinks = JSON
+            externalLinks {
+                dataProcessing {
+                    10 = FriendsOfTYPO3\Headless\DataProcessing\MenuProcessor
+                    10 {
+                        special = directory
+                        special.value = 128
+                        titleField = nav_title // title
+                        as = externalLinks
+                    }
+                }
+            }
+        }
+    }
+}

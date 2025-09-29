@@ -1,0 +1,23 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+
+<f:layout name="Default" />
+
+<f:section name="Main">
+    <div class="container">
+        <header class="site-header">
+            <nav class="main-navigation">
+                <f:cObject typoscriptObjectPath="lib.navigation.main" />
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <f:format.raw>{content}</f:format.raw>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; {f:format.date(date: 'now', format: 'Y')} Pixelcoda. All rights reserved.</p>
+        </footer>
+    </div>
+</f:section>
+
+</html>

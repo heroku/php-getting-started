@@ -1,0 +1,62 @@
+# FINAL OVERRIDE - This loads last
+# ==================================
+
+# Force Standard Mode when configured
+[traverse(site:customConfiguration, 'renderingMode') == 'standard']
+    # Kill all JSON configuration
+    page.config.additionalHeaders >
+    page.config.disableAllHeaderCode = 0
+    
+    # Completely rebuild page object
+    page = PAGE
+    page {
+        typeNum = 0
+        
+        # HTML5 doctype
+        config {
+            doctype = html5
+            xmlprologue = none
+            htmlTag_setParams = lang="en"
+            disableAllHeaderCode = 0
+            additionalHeaders.10.header = Content-Type: text/html; charset=utf-8
+        }
+        
+        # Basic HTML structure
+        10 = TEXT
+        10.value (
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TYPO3 Standard Mode</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: #ff8700; color: white; padding: 20px; margin: -20px -20px 20px -20px; }
+        h1 { margin: 0; }
+        .content { padding: 20px 0; }
+        footer { background: #333; color: white; padding: 20px; margin: 20px -20px -20px -20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TYPO3 - Standard Mode Active</h1>
+        <p>Traditional HTML Rendering</p>
+    </header>
+    <div class="content">
+        )
+        
+        20 < styles.content.get
+        20.select.where = {#colPos}=0
+        
+        30 = TEXT
+        30.value (
+    </div>
+    <footer>
+        <p>&copy; 2025 TYPO3 CMS - Standard Rendering Mode</p>
+    </footer>
+</body>
+</html>
+        )
+    }
+[END]

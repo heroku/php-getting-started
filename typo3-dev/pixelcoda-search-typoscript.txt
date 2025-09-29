@@ -1,0 +1,82 @@
+# pixelcoda Search TypoScript Configuration
+# Copy this content to your TypoScript Template Setup field
+
+# Include pixelcoda Search static template
+@import 'EXT:pixelcoda_search/Configuration/TypoScript/setup.typoscript'
+
+# Basic plugin configuration
+plugin.tx_pixelcodasearch_search {
+    view {
+        templateRootPaths {
+            0 = EXT:pixelcoda_search/Resources/Private/Templates/
+            10 = {$plugin.tx_pixelcodasearch_search.view.templateRootPath}
+        }
+        partialRootPaths {
+            0 = EXT:pixelcoda_search/Resources/Private/Partials/
+            10 = {$plugin.tx_pixelcodasearch_search.view.partialRootPath}
+        }
+        layoutRootPaths {
+            0 = EXT:pixelcoda_search/Resources/Private/Layouts/
+            10 = {$plugin.tx_pixelcodasearch_search.view.layoutRootPath}
+        }
+    }
+    
+    settings {
+        mode = classic
+        resultsPerPage = 10
+        maxPassages = 3
+        enableSuggestions = 1
+        enableAsk = 1
+        showDebug = 1
+        collections = pages,tt_content,news
+        placeholder = Search...
+        template = default
+        cssClass = pixelcoda-search
+        enableMetrics = 1
+        minQueryLength = 2
+        debounceMs = 300
+    }
+}
+
+# Page type for JSON API responses (headless mode)
+pixelcoda_search_api = PAGE
+pixelcoda_search_api {
+    typeNum = 1699
+    config {
+        disableAllHeaderCode = 1
+        additionalHeaders.10.header = Content-Type: application/vnd.api+json
+        additionalHeaders.20.header = X-Powered-By: pixelcoda Search v2.0
+        xhtml_cleaning = 0
+        admPanel = 0
+        debug = 0
+    }
+    
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = PixelcodaSearch
+        pluginName = Search
+        vendorName = PixelCoda
+        controller = Search
+        action = search
+    }
+}
+
+# Include CSS and JavaScript for classic mode
+page {
+    includeCSS {
+        pixelcodaSearch = EXT:pixelcoda_search/Resources/Public/Css/search.css
+        pixelcodaSearch {
+            media = all
+            disableCompression = 1
+        }
+    }
+    
+    includeJSFooter {
+        pixelcodaSearch = EXT:pixelcoda_search/Resources/Public/JavaScript/search.js
+        pixelcodaSearch {
+            async = 1
+            defer = 1
+        }
+    }
+}

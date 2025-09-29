@@ -1,0 +1,35 @@
+{
+	"name": "pwademo/site-package",
+	"type": "typo3-cms-extension",
+	"version": "1.0.0",
+	"minimum-stability": "stable",
+	"description": "TYPO3 Headless And PWA Demo Site Package",
+	"require": {
+		"typo3/cms-core": "^12.4"
+	},
+	"authors": [
+		{
+			"name": "Łukasz Uznański",
+			"role": "Developer"
+		},
+		{
+			"name": "Marcin Sągol",
+			"role": "Developer"
+		},
+		{
+			"name": "TYPO3 PWA Initiative",
+			"role": "Developer",
+			"email": "extensions@macopedia.pl"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Pwademo\\SitePackage\\": "Classes"
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "site_package"
+		}
+	}
+}

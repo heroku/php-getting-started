@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "apps/api"
+    },
+    {
+      "path": "apps/worker"
+    },
+    {
+      "path": "apps/widgets"
+    },
+    {
+      "path": "packages/llm-adapter"
+    }
+  ]
+}

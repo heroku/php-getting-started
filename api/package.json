@@ -1,0 +1,26 @@
+{
+    "name": "@pixelcoda/api",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "tsx src/index.ts",
+        "build": "tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "@hono/node-server": "^1.12.0",
+        "@hono/zod-validator": "^0.2.2",
+        "@neondatabase/serverless": "^0.9.0",
+        "@pixelcoda/llm-adapter": "workspace:*",
+        "dotenv": "^16.4.5",
+        "hono": "^4.5.3",
+        "jsonwebtoken": "^9.0.2",
+        "pg": "^8.11.3",
+        "undici": "^6.19.8",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "tsx": "^4.19.2",
+        "typescript": "^5.6.3"
+    }
+}

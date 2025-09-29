@@ -1,0 +1,11 @@
+TCEMAIN {
+  table.pages {
+    disableHideAtCopy = 1
+  }
+  table.tt_content {
+    disableHideAtCopy = 1
+  }
+  table.tx_news_domain_model_news {
+    disableHideAtCopy = 1
+  }
+}

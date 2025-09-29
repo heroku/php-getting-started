@@ -1,0 +1,148 @@
+# TYPO3 12.4 Development Environment - Git Ignore
+
+# TYPO3 Core Files (ignore everything in public except essentials)
+/public/*
+!/public/index.php
+!/public/typo3conf/
+
+# TYPO3 Configuration Directory (selective)
+/public/typo3conf/*
+!/public/typo3conf/ext/
+!/public/typo3conf/PackageStates.php
+
+# Keep only our pixelcoda_search extension
+/public/typo3conf/ext/*
+!/public/typo3conf/ext/pixelcoda_search/
+
+# TYPO3 Sensitive Configuration Files
+/public/typo3conf/LocalConfiguration.php
+/public/typo3conf/AdditionalConfiguration.php
+/public/typo3conf/ENABLE_INSTALL_TOOL
+/public/typo3conf/deprecation_*.log
+/public/typo3conf/temp_*
+/public/typo3conf/realurl_*
+
+# TYPO3 Runtime Files
+/var/
+/vendor/
+composer.lock
+/config/
+.env
+.env.local
+
+# TYPO3 File Storage
+/fileadmin/
+/uploads/
+/typo3temp/
+/public/typo3temp/
+/public/_processed_/
+/public/fileadmin/_processed_/
+/public/fileadmin/_temp_/
+
+# DDEV Files (keep config, ignore generated)
+/.ddev/commands/
+/.ddev/homeadditions/
+/.ddev/providers/
+/.ddev/.dbimageBuild/
+/.ddev/.webimageBuild/
+/.ddev/.webimageExtra/
+/.ddev/nginx_full/
+/.ddev/apache/
+/.ddev/mysql/
+/.ddev/postgres/
+/.ddev/redis/
+/.ddev/solr/
+/.ddev/elasticsearch/
+
+# Keep DDEV config files
+!/.ddev/config.yaml
+!/.ddev/docker-compose.*.yaml
+
+# Node.js (if used in TYPO3 frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+/var/log/*
+
+# Temporary Files
+tmp/
+temp/
+.tmp/
+
+# PHP Development
+.phpunit.result.cache
+/phpunit.xml
+.php_cs.cache
+.php-cs-fixer.cache
+phpstan.neon
+.phpstan.neon
+
+# TYPO3 Testing
+/typo3/sysext/core/Tests/
+/Build/
+
+# Local Development Overrides
+docker-compose.override.yml
+/config/sites/*/config.yaml.local
+
+# Extension Development
+/packages/*/Tests/Acceptance/Reports/
+/packages/*/Tests/Functional/Fixtures/Database/
+/packages/*/Tests/Unit/Fixtures/
+
+# Backup Files
+*.bak
+*.backup
+*.old
+
+# Database Dumps (keep demo content)
+*.sql
+!demo-content.sql
+!setup-typoscript.sql
+
+# Composer
+/auth.json
+
+# Local configuration overrides
+.env.local
+.env.*.local
+
+# TYPO3 12.4 Specific
+/public/typo3/sysext/
+/public/typo3/ext/
+/public/typo3/index.php
+/public/typo3/install.php
+
+# Cache and Session Files
+/var/cache/
+/var/log/
+/var/sessions/
+/var/transient/
+/var/charset/
+/var/lock/

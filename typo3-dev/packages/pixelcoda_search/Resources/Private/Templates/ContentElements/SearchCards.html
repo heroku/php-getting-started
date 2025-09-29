@@ -1,0 +1,64 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Header">
+    <f:if condition="{data.header}">
+        <f:render partial="Header/Header" arguments="{
+            header: data.header,
+            layout: data.header_layout,
+            positionClass: '{f:if(condition: data.header_position, then: \'ce-headline-{data.header_position}\')}'
+        }" />
+    </f:if>
+</f:section>
+
+<f:section name="Main">
+    <div class="pixelcoda-search pixelcoda-search-cards">
+        <div class="search-card">
+            <div class="search-card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+            <h3 class="search-card-title">
+                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.title" />
+            </h3>
+            <p class="search-card-description">
+                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.description" />
+            </p>
+
+            <form class="search-form search-form-card" action="/search" method="get">
+                <div class="search-input-wrapper-card">
+                    <input type="text" class="search-input search-input-card" name="q" placeholder="{f:if(condition: flexform_data.settings.placeholder, then: flexform_data.settings.placeholder, else: '{f:translate(key: \'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.placeholder.cards\')}')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.input')}">
+                    <button type="submit" class="search-button search-button-card" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.submit')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <span>
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.button.submit" /></span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="search-card-hints">
+                <h4>
+                    <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.popular" />
+                </h4>
+                <div class="search-tags">
+                    <a href="/search?q=produkte" class="search-tag">
+                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.tag.products" /></a>
+                    <a href="/search?q=service" class="search-tag">
+                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.tag.service" /></a>
+                    <a href="/search?q=kontakt" class="search-tag">
+                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.tag.contact" /></a>
+                    <a href="/search?q=news" class="search-tag">
+                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.cards.tag.news" /></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:section>
+
+</html>

@@ -1,0 +1,193 @@
+# Pixelcoda Search Content Element - Dual Mode Support
+# Supports both Headless (JSON) and Standard (Fluid) modes
+
+# Check if we're in Headless mode
+[traverse(request.getQueryParams(), 'type') == 834 || request.getAttribute('headless') || plugin.tx_pixelcodasearch_search.settings.mode == 'headless']
+    # HEADLESS MODE - JSON Output
+    tt_content.pixelcodasearch_search >
+    tt_content.pixelcodasearch_search = JSON
+    tt_content.pixelcodasearch_search {
+        fields {
+            id = INT
+            id.field = uid
+            
+            type = TEXT
+            type.field = CType
+            
+            colPos = INT
+            colPos.field = colPos
+            
+            categories = TEXT
+            categories.value = 
+            
+            appearance = JSON
+            appearance {
+                fields {
+                    layout = TEXT
+                    layout.field = layout
+                    layout.ifEmpty = default
+                    
+                    frameClass = TEXT
+                    frameClass.field = frame_class
+                    frameClass.ifEmpty = default
+                    
+                    spaceBefore = TEXT
+                    spaceBefore.field = space_before_class
+                    spaceBefore.ifEmpty = 
+                    
+                    spaceAfter = TEXT
+                    spaceAfter.field = space_after_class
+                    spaceAfter.ifEmpty = 
+                }
+            }
+            
+            content = JSON
+            content {
+                fields {
+                    header = TEXT
+                    header.field = header
+                    header.ifEmpty = 
+                    
+                    subheader = TEXT
+                    subheader.field = subheader
+                    subheader.ifEmpty = 
+                    
+                    headerLayout = INT
+                    headerLayout.field = header_layout
+                    headerLayout.ifEmpty = 0
+                    
+                    headerPosition = TEXT
+                    headerPosition.field = header_position
+                    headerPosition.ifEmpty = 
+                    
+                    headerLink = TEXT
+                    headerLink.field = header_link
+                    headerLink.ifEmpty = 
+                    
+                    # Plugin-specific fields
+                    pluginType = TEXT
+                    pluginType.value = pixelcodasearch_search
+                    
+                    mode = TEXT
+                    mode.value = headless
+                    
+                    placeholder = TEXT
+                    placeholder.value = Website durchsuchen...
+                    
+                    searchConfig = JSON
+                    searchConfig {
+                        fields {
+                            mode = TEXT
+                            mode.value = headless
+                            
+                            placeholder = TEXT
+                            placeholder.value = Website durchsuchen...
+                            
+                            resultsPerPage = INT
+                            resultsPerPage.value = 10
+                            
+                            collections = TEXT
+                            collections.value = pages,news
+                            
+                            enableSuggestions = INT
+                            enableSuggestions.value = 1
+                            
+                            enableAsk = INT
+                            enableAsk.value = 1
+                        }
+                    }
+                    
+                    endpoints = JSON
+                    endpoints {
+                        fields {
+                            search = TEXT
+                            search.value = /api/search
+                            
+                            ask = TEXT
+                            ask.value = /api/ask
+                            
+                            suggest = TEXT
+                            suggest.value = /api/suggest
+                        }
+                    }
+                    
+                    ui = JSON
+                    ui {
+                        fields {
+                            showSuggestions = INT
+                            showSuggestions.value = 1
+                            
+                            showAsk = INT
+                            showAsk.value = 1
+                            
+                            template = TEXT
+                            template.value = Default
+                        }
+                    }
+                }
+            }
+        }
+    }
+[ELSE]
+    # STANDARD MODE - Fluid Templates
+    tt_content.pixelcodasearch_search >
+    tt_content.pixelcodasearch_search = FLUIDTEMPLATE
+    tt_content.pixelcodasearch_search {
+        templateName = Search/Index
+        
+        templateRootPaths {
+            10 = EXT:pixelcoda_search/Resources/Private/Templates/
+            20 = {$plugin.tx_pixelcodasearch_search.view.templateRootPath}
+        }
+        
+        partialRootPaths {
+            10 = EXT:pixelcoda_search/Resources/Private/Partials/
+            20 = {$plugin.tx_pixelcodasearch_search.view.partialRootPath}
+        }
+        
+        layoutRootPaths {
+            10 = EXT:pixelcoda_search/Resources/Private/Layouts/
+            20 = {$plugin.tx_pixelcodasearch_search.view.layoutRootPath}
+        }
+        
+        dataProcessing {
+            10 = TYPO3\CMS\Frontend\DataProcessing\FlexFormProcessor
+            10 {
+                fieldName = pi_flexform
+                as = flexform
+            }
+        }
+        
+        settings {
+            mode = {$plugin.tx_pixelcodasearch_search.settings.mode}
+            apiUrl = {$pixelcoda.search.apiUrl}
+            apiKey = {$pixelcoda.search.readApiKey}
+            project = {$pixelcoda.search.projectId}
+            placeholder = {$plugin.tx_pixelcodasearch_search.settings.placeholder}
+            collections = {$plugin.tx_pixelcodasearch_search.settings.collections}
+            enableSuggestions = {$plugin.tx_pixelcodasearch_search.settings.enableSuggestions}
+            enableAsk = {$plugin.tx_pixelcodasearch_search.settings.enableAsk}
+            resultsPerPage = {$plugin.tx_pixelcodasearch_search.settings.resultsPerPage}
+            template = {$plugin.tx_pixelcodasearch_search.settings.template}
+        }
+        
+        variables {
+            searchConfigJson = TEXT
+            searchConfigJson {
+                value = {
+                value.stdWrap.cObject = COA
+                value.stdWrap.cObject {
+                    10 = TEXT
+                    10.value = "apiUrl":"{$pixelcoda.search.apiUrl}",
+                    20 = TEXT
+                    20.value = "apiKey":"{$pixelcoda.search.readApiKey}",
+                    30 = TEXT
+                    30.value = "project":"{$pixelcoda.search.projectId}",
+                    40 = TEXT
+                    40.value = "collections":"{$plugin.tx_pixelcodasearch_search.settings.collections}"
+                }
+                wrap = {|}
+            }
+        }
+    }
+[END]

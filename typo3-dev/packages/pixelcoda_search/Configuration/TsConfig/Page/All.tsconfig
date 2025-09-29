@@ -1,0 +1,2 @@
+# Include all Page TSConfig files
+@import 'EXT:pixelcoda_search/Configuration/TsConfig/Page/ContentElement.tsconfig'

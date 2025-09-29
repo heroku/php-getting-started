@@ -1,0 +1,23 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Header">
+    <!-- No header in minimal version -->
+</f:section>
+
+<f:section name="Main">
+    <div class="pixelcoda-search pixelcoda-search-minimal">
+        <form class="search-form search-form-minimal" action="/search" method="get">
+            <input type="text" class="search-input-minimal" name="q" placeholder="{f:if(condition: flexform_data.settings.placeholder, then: flexform_data.settings.placeholder, else: '{f:translate(key: \'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.placeholder.minimal\')}')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.input')}">
+            <button type="submit" class="search-button-minimal" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.submit')}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
+</f:section>
+
+</html>

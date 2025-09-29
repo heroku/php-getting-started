@@ -1,0 +1,7 @@
+tt_content
+,uid,pid,header,bodytext,CType,hidden,deleted
+,1,2,"Test Content","This is test content body","text",0,0
+,2,2,"Another Content","Another content body text","text",0,0
+,3,3,"Content Element","Content element body","text",0,0
+,4,4,"Category Content","Category content body","text",0,0
+,5,5,"Uncategorized Content","Uncategorized content body","text",0,0

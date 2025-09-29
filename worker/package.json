@@ -1,0 +1,20 @@
+{
+  "name": "@pixelcoda/worker",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@pixelcoda/llm-adapter": "workspace:*",
+    "dotenv": "^16.4.5",
+    "node-html-parser": "^6.1.12",
+    "undici": "^6.19.8"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

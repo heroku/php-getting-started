@@ -1,0 +1,115 @@
+# DIREKTES TYPOSCRIPT SETUP FÜR PIXELCODA SEARCH
+# Kopiere diesen Code in: Web > Template > Setup
+
+# Plugin-Konfiguration
+plugin.tx_pixelcodasearch_search = USER
+plugin.tx_pixelcodasearch_search {
+    userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+    extensionName = PixelcodaSearch
+    pluginName = Search
+    vendorName = PixelCoda
+    controller = PixelCoda\PixelcodaSearch\Controller\SearchController
+    action = index
+    
+    settings {
+        mode = classic
+        resultsPerPage = 10
+        enableSuggestions = 1
+        enableAsk = 1
+        showDebug = 1
+        collections = pages,tt_content,news
+        placeholder = Search...
+        apiUrl = http://host.docker.internal:8787
+        apiKey = pc_write_dev_key
+        projectId = typo3-dev
+    }
+}
+
+# Als Content Element verfügbar machen
+tt_content.pixelcoda_search < plugin.tx_pixelcodasearch_search
+
+# Content Element Typ registrieren
+tt_content {
+    pixelcodasearch_search < plugin.tx_pixelcodasearch_search
+}
+
+# CSS und JavaScript
+page {
+    includeCSS {
+        pixelcodaSearch = fileadmin/pixelcoda-search.css
+        pixelcodaSearch {
+            media = all
+        }
+    }
+    
+    includeJSFooter {
+        pixelcodaSearch = fileadmin/pixelcoda-search.js
+        pixelcodaSearch {
+            async = 1
+            defer = 1
+        }
+    }
+}
+
+# Einfacher Test-Marker für direktes HTML
+lib.pixelcodaSearch = TEXT
+lib.pixelcodaSearch.value (
+<div class="pixelcoda-search">
+    <h2>🚀 pixelcoda Search Plugin</h2>
+    <p style="color: green;">✅ Plugin loaded successfully!</p>
+    <p>API Status: <span id="status">Checking...</span></p>
+    
+    <form onsubmit="return search(event)">
+        <input type="search" id="q" placeholder="Search..." required>
+        <button type="submit">Search</button>
+    </form>
+    
+    <div id="results"></div>
+    
+    <script>
+    fetch("http://localhost:8787/health")
+        .then(r => r.json())
+        .then(d => document.getElementById("status").innerHTML = "✅ Connected")
+        .catch(e => document.getElementById("status").innerHTML = "❌ Offline");
+        
+    async function search(e) {
+        e.preventDefault();
+        const q = document.getElementById("q").value;
+        const results = document.getElementById("results");
+        results.innerHTML = "Searching...";
+        
+        try {
+            const response = await fetch("http://localhost:8787/v1/search/demo", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({q})
+            });
+            const data = await response.json();
+            
+            if (data.data?.length) {
+                let html = "<h3>Results:</h3>";
+                data.data.forEach(r => {
+                    html += '<div style="border:1px solid #ddd;padding:10px;margin:5px 0">' +
+                           '<strong>' + r.attributes.title + '</strong><br>' +
+                           '<small>' + r.attributes.summary + '</small>' +
+                           '</div>';
+                });
+                results.innerHTML = html;
+            } else {
+                results.innerHTML = "No results found.";
+            }
+        } catch (error) {
+            results.innerHTML = "Error: " + error.message;
+        }
+        return false;
+    }
+    </script>
+</div>
+)
+
+# VERWENDUNG:
+# 1. Kopiere den obigen Code in Web > Template > Setup
+# 2. Gehe zu Web > Page
+# 3. Füge HTML Content Element hinzu
+# 4. Verwende: <f:cObject typoscriptObjectPath="lib.pixelcodaSearch" />
+# ODER einfach: {lib.pixelcodaSearch}

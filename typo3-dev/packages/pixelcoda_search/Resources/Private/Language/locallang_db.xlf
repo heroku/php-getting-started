@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2024-01-01T00:00:00Z" product-name="pixelcoda_search">
+        <header/>
+        <body>
+            <trans-unit id="plugin.search.title" xml:space="preserve">
+                <source>pixelcoda Search</source>
+            </trans-unit>
+            <trans-unit id="plugin.search.description" xml:space="preserve">
+                <source>Advanced search functionality powered by pixelcoda Search API</source>
+            </trans-unit>
+            
+            <!-- Content Element Labels -->
+            <trans-unit id="tt_content.CType.pixelcodasearch_search" xml:space="preserve">
+                <source>pixelcoda Search</source>
+            </trans-unit>
+            <trans-unit id="tt_content.CType.pixelcodasearch_search.description" xml:space="preserve">
+                <source>Add AI-powered search functionality to your page</source>
+            </trans-unit>
+            <trans-unit id="tabs.plugin" xml:space="preserve">
+                <source>Plugin Settings</source>
+            </trans-unit>
+            
+            <!-- FlexForm Labels -->
+            <trans-unit id="flexform.general" xml:space="preserve">
+                <source>General Settings</source>
+            </trans-unit>
+            <trans-unit id="flexform.mode" xml:space="preserve">
+                <source>Plugin Mode</source>
+            </trans-unit>
+            <trans-unit id="flexform.mode.description" xml:space="preserve">
+                <source>Choose between classic TYPO3 frontend integration or headless API mode</source>
+            </trans-unit>
+            <trans-unit id="flexform.mode.classic" xml:space="preserve">
+                <source>Classic Frontend</source>
+            </trans-unit>
+            <trans-unit id="flexform.mode.headless" xml:space="preserve">
+                <source>Headless API</source>
+            </trans-unit>
+            <trans-unit id="flexform.resultsPerPage" xml:space="preserve">
+                <source>Results per Page</source>
+            </trans-unit>
+            <trans-unit id="flexform.enableSuggestions" xml:space="preserve">
+                <source>Enable Search Suggestions</source>
+            </trans-unit>
+            <trans-unit id="flexform.enableAsk" xml:space="preserve">
+                <source>Enable AI-powered Ask Feature</source>
+            </trans-unit>
+            <trans-unit id="flexform.collections" xml:space="preserve">
+                <source>Collections to Search</source>
+            </trans-unit>
+            <trans-unit id="flexform.collections.description" xml:space="preserve">
+                <source>Comma-separated list of collections to search in (e.g. pages,news)</source>
+            </trans-unit>
+            <trans-unit id="flexform.placeholder" xml:space="preserve">
+                <source>Search Placeholder Text</source>
+            </trans-unit>
+            <trans-unit id="flexform.template" xml:space="preserve">
+                <source>Template Variant</source>
+            </trans-unit>
+            <trans-unit id="flexform.template.default" xml:space="preserve">
+                <source>Default</source>
+            </trans-unit>
+            <trans-unit id="flexform.template.minimal" xml:space="preserve">
+                <source>Minimal</source>
+            </trans-unit>
+            <trans-unit id="flexform.template.advanced" xml:space="preserve">
+                <source>Advanced</source>
+            </trans-unit>
+            <trans-unit id="flexform.template.cards" xml:space="preserve">
+                <source>Cards</source>
+        </trans-unit>
+        
+        <!-- FlexForm Labels -->
+        <trans-unit id="flexform.tab.general" resname="flexform.tab.general">
+            <source>General Settings</source>
+        </trans-unit>
+        <trans-unit id="flexform.tab.advanced" resname="flexform.tab.advanced">
+            <source>Advanced Settings</source>
+        </trans-unit>
+        
+        <trans-unit id="flexform.settings.mode" resname="flexform.settings.mode">
+            <source>Plugin Mode</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.mode.classic" resname="flexform.settings.mode.classic">
+            <source>Classic Frontend</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.mode.headless" resname="flexform.settings.mode.headless">
+            <source>Headless API</source>
+        </trans-unit>
+        
+        <trans-unit id="flexform.settings.template" resname="flexform.settings.template">
+            <source>Template Variant</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.template.default" resname="flexform.settings.template.default">
+            <source>Standard (Default)</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.template.minimal" resname="flexform.settings.template.minimal">
+            <source>Minimal</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.template.advanced" resname="flexform.settings.template.advanced">
+            <source>Erweitert (Advanced)</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.template.cards" resname="flexform.settings.template.cards">
+            <source>Karten-Layout (Cards)</source>
+        </trans-unit>
+        
+        <trans-unit id="flexform.settings.collections" resname="flexform.settings.collections">
+            <source>Collections to Search</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.collections.pages" resname="flexform.settings.collections.pages">
+            <source>[pages]</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.collections.news" resname="flexform.settings.collections.news">
+            <source>[news]</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.collections.tt_content" resname="flexform.settings.collections.tt_content">
+            <source>[tt_content]</source>
+        </trans-unit>
+        
+        <trans-unit id="flexform.settings.placeholder" resname="flexform.settings.placeholder">
+            <source>Placeholder Text</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.resultsPerPage" resname="flexform.settings.resultsPerPage">
+            <source>Results per Page</source>
+        </trans-unit>
+        
+        <trans-unit id="flexform.settings.enableSuggestions" resname="flexform.settings.enableSuggestions">
+            <source>Enable Search Suggestions</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.enableAsk" resname="flexform.settings.enableAsk">
+            <source>Enable AI Ask Feature</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.minQueryLength" resname="flexform.settings.minQueryLength">
+            <source>Minimum Query Length</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.cssClass" resname="flexform.settings.cssClass">
+            <source>Additional CSS Class</source>
+        </trans-unit>
+        
+        <!-- New Display Options -->
+        <trans-unit id="flexform.settings.showImages" resname="flexform.settings.showImages">
+            <source>Bilder in Suchergebnissen anzeigen</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.showTags" resname="flexform.settings.showTags">
+            <source>Tags anzeigen</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.showDate" resname="flexform.settings.showDate">
+            <source>Datum anzeigen</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.showCategories" resname="flexform.settings.showCategories">
+            <source>Kategorien anzeigen</source>
+        </trans-unit>
+        
+        <!-- Sort Order -->
+        <trans-unit id="flexform.settings.sortOrder" resname="flexform.settings.sortOrder">
+            <source>Sortierung</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.sortOrder.relevance" resname="flexform.settings.sortOrder.relevance">
+            <source>Nach Relevanz</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.sortOrder.date_desc" resname="flexform.settings.sortOrder.date_desc">
+            <source>Datum (Neueste zuerst)</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.sortOrder.date_asc" resname="flexform.settings.sortOrder.date_asc">
+            <source>Datum (Älteste zuerst)</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.sortOrder.title" resname="flexform.settings.sortOrder.title">
+            <source>Alphabetisch (Titel)</source>
+        </trans-unit>
+        
+        <!-- Advanced Features -->
+        <trans-unit id="flexform.settings.highlightTerms" resname="flexform.settings.highlightTerms">
+            <source>Suchbegriffe hervorheben</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.showBreadcrumb" resname="flexform.settings.showBreadcrumb">
+            <source>Breadcrumb-Navigation anzeigen</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.enableFacets" resname="flexform.settings.enableFacets">
+            <source>Facettensuche aktivieren (Filter)</source>
+        </trans-unit>
+        
+        <!-- Image Size -->
+        <trans-unit id="flexform.settings.imageSize" resname="flexform.settings.imageSize">
+            <source>Bildgröße</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.imageSize.small" resname="flexform.settings.imageSize.small">
+            <source>Klein (80x80)</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.imageSize.medium" resname="flexform.settings.imageSize.medium">
+            <source>Mittel (150x150)</source>
+        </trans-unit>
+        <trans-unit id="flexform.settings.imageSize.large" resname="flexform.settings.imageSize.large">
+            <source>Groß (250x250)</source>
+        </trans-unit>
+        
+        <trans-unit id="flexform.settings.enableHistory" resname="flexform.settings.enableHistory">
+            <source>Suchverlauf aktivieren</source>
+        </trans-unit>
+    </body>
+</file>
+</xliff>

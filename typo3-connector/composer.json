@@ -1,0 +1,13 @@
+{
+  "name": "pixelcoda/headless-search-connector",
+  "type": "typo3-cms-extension",
+  "autoload": {
+    "psr-4": {
+      "PixelCoda\\HeadlessSearchConnector\\": "Classes/"
+    }
+  },
+  "require": {
+    "php": ">=8.1",
+    "typo3/cms-core": "^12.4 || ^13.0"
+  }
+}

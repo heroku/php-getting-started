@@ -1,0 +1,83 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Header">
+    <f:if condition="{data.header}">
+        <f:render partial="Header/Header" arguments="{
+            header: data.header,
+            layout: data.header_layout,
+            positionClass: '{f:if(condition: data.header_position, then: \'ce-headline-{data.header_position}\')}'
+        }" />
+    </f:if>
+</f:section>
+
+<f:section name="Main">
+    <div class="pixelcoda-search pixelcoda-search-advanced">
+        <form class="search-form search-form-advanced" action="/search" method="get">
+            <div class="search-advanced-wrapper">
+                <div class="search-input-group">
+                    <input type="text" class="search-input search-input-large" name="q" placeholder="{f:if(condition: flexform_data.settings.placeholder, then: flexform_data.settings.placeholder, else: '{f:translate(key: \'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.placeholder.advanced\')}')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.input')}">
+                    <button type="submit" class="search-button search-button-large" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.submit')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <span>
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.button.submit.advanced" /></span>
+                    </button>
+                </div>
+
+                <!-- Erweiterte Optionen -->
+                <div class="search-advanced-options">
+                    <h4>
+                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.options.title" />
+                    </h4>
+                    <div class="search-filters">
+                        <label class="search-filter">
+                            <input type="checkbox" name="filter_pages" value="1" checked>
+                            <span>
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.filter.pages" /></span>
+                        </label>
+                        <label class="search-filter">
+                            <input type="checkbox" name="filter_news" value="1" checked>
+                            <span>
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.filter.news" /></span>
+                        </label>
+                        <label class="search-filter">
+                            <input type="checkbox" name="filter_content" value="1" checked>
+                            <span>
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.filter.content" /></span>
+                        </label>
+                    </div>
+                    <div class="search-sort">
+                        <label for="sort">
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.sort.label" /></label>
+                        <select name="sort" id="sort">
+                            <option value="relevance">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.sort.relevance" />
+                            </option>
+                            <option value="date_desc">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.sort.date_desc" />
+                            </option>
+                            <option value="date_asc">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.sort.date_asc" />
+                            </option>
+                            <option value="title">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.sort.title" />
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <f:if condition="{flexform_data.settings.showSuggestions}">
+            <div class="search-suggestions-advanced" id="search-suggestions-{data.uid}" style="display: none;">
+                <!-- Suggestions will be populated via JavaScript -->
+            </div>
+        </f:if>
+    </div>
+</f:section>
+
+</html>

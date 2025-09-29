@@ -1,0 +1,147 @@
+# Site Package Main Setup
+# ========================
+
+# Import page configuration with mode switch
+@import 'EXT:site_package/Configuration/TypoScript/Setup/*.typoscript'
+
+# Global configuration based on rendering mode
+[traverse(site:customConfiguration, 'renderingMode') == 'headless']
+    # HEADLESS MODE ACTIVE
+    # ====================
+    
+    # Include Headless Extension
+    @import 'EXT:headless/Configuration/TypoScript/setup.typoscript'
+    
+    # Override content element rendering for JSON
+    lib.contentElement {
+        templateRootPaths {
+            200 = EXT:headless/Resources/Private/Templates/
+        }
+    }
+    
+    # Configure JSON output
+    config {
+        disableAllHeaderCode = 1
+        additionalHeaders {
+            10.header = Content-Type: application/json;charset=utf-8
+            20.header = Access-Control-Allow-Origin: *
+            30.header = Access-Control-Allow-Methods: GET, POST, OPTIONS
+        }
+        debug = 0
+        admPanel = 0
+    }
+    
+    # JSON Page Object
+    page = PAGE
+    page {
+        typeNum = 0
+        10 = JSON
+        10 {
+            fields {
+                id = TEXT
+                id.field = uid
+                
+                title = TEXT
+                title.field = title
+                
+                slug = TEXT
+                slug.field = slug
+                
+                content = JSON
+                content {
+                    fields {
+                        colPos0 < styles.content.get
+                        colPos0.select.where = {#colPos}=0
+                        colPos0.renderObj =< tt_content
+                        
+                        colPos1 < styles.content.get
+                        colPos1.select.where = {#colPos}=1
+                        colPos1.renderObj =< tt_content
+                    }
+                }
+                
+                meta = JSON
+                meta {
+                    fields {
+                        title = TEXT
+                        title.field = title
+                        
+                        description = TEXT
+                        description.field = description
+                        
+                        keywords = TEXT
+                        keywords.field = keywords
+                    }
+                }
+            }
+        }
+    }
+    
+[ELSE]
+    # STANDARD MODE ACTIVE
+    # ====================
+    
+    # Include Fluid Styled Content
+    @import 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript'
+    
+    # Standard HTML configuration
+    config {
+        doctype = html5
+        xmlprologue = none
+        htmlTag_setParams = lang="en"
+        removeDefaultJS = 0
+        compressCss = 1
+        compressJs = 1
+        concatenateCss = 1
+        concatenateJs = 1
+    }
+    
+    # Standard Page Object
+    page = PAGE
+    page {
+        typeNum = 0
+        
+        # Meta tags
+        meta {
+            viewport = width=device-width, initial-scale=1
+            X-UA-Compatible = IE=edge
+        }
+        
+        # CSS
+        includeCSS {
+            normalize = EXT:site_package/Resources/Public/Css/normalize.css
+            main = EXT:site_package/Resources/Public/Css/main.css
+        }
+        
+        # JavaScript
+        includeJSFooter {
+            main = EXT:site_package/Resources/Public/JavaScript/main.js
+        }
+        
+        # Main template
+        10 = FLUIDTEMPLATE
+        10 {
+            templateName = Default
+            
+            templateRootPaths {
+                10 = EXT:site_package/Resources/Private/Templates/Page/
+            }
+            
+            partialRootPaths {
+                10 = EXT:site_package/Resources/Private/Partials/Page/
+            }
+            
+            layoutRootPaths {
+                10 = EXT:site_package/Resources/Private/Layouts/Page/
+            }
+            
+            variables {
+                content < styles.content.get
+                content.select.where = {#colPos}=0
+            }
+        }
+    }
+[END]
+
+# Shared configuration for both modes
+lib.parseFunc_RTE < lib.parseFunc_RTE

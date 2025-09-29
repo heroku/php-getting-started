@@ -1,0 +1,9 @@
+@import 'EXT:seo/Configuration/TypoScript/XmlSitemap/setup.typoscript'
+@import 'EXT:mask/Configuration/TypoScript/setup.typoscript'
+@import 'EXT:form/Configuration/TypoScript/setup.typoscript'
+@import 'EXT:headless/Configuration/TypoScript/setup.typoscript'
+
+@import 'EXT:site_package/Configuration/TypoScript/ContentElement/*.typoscript'
+@import 'EXT:site_package/Configuration/TypoScript/Configuration/*.typoscript'
+@import 'EXT:site_package/Configuration/TypoScript/Plain/ContentElements/*.typoscript'
+@import 'EXT:site_package/Configuration/TypoScript/Plain/Plugins/*.typoscript'

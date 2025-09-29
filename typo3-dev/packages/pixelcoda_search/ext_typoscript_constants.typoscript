@@ -1,0 +1,2 @@
+# Include TypoScript Constants
+@import 'EXT:pixelcoda_search/Configuration/TypoScript/constants.typoscript'

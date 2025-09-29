@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixelcoda Search - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2em;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            opacity: 0.5;
+        }
+
+        #searchInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 18px;
+            color: white;
+        }
+
+        #searchInput::placeholder {
+            color: #64748b;
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+        }
+
+        .suggestions {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .suggestion-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            opacity: 0.4;
+        }
+
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .result-url {
+            color: #60a5fa;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-decoration: none;
+        }
+
+        .result-description {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-dot.online {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Pixelcoda Search</h1>
+            <div class="subtitle">Blitzschnelle Suche powered by Meilisearch</div>
+        </div>
+
+        <div class="search-box">
+            <div class="search-input-wrapper">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Website durchsuchen..." autocomplete="off">
+                <button class="search-button" onclick="performSearch()">
+                    Suchen
+                </button>
+            </div>
+            <div id="suggestions" class="suggestions" style="display: none;"></div>
+        </div>
+
+        <div id="results" class="results-container"></div>
+
+        <div class="status-bar">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Verbindung wird geprüft...</span>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = 'http://localhost:8787';
+        const API_KEY = 'pc_read_dev_key';
+        const PROJECT = 'demo';
+
+        // State
+        let searchTimeout;
+        let isOnline = false;
+
+        // Check API status
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                setOnlineStatus(data.ok === true);
+            } catch (error) {
+                setOnlineStatus(false);
+            }
+        }
+
+        function setOnlineStatus(online) {
+            isOnline = online;
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            if (online) {
+                dot.className = 'status-dot online';
+                text.textContent = 'API ist online und bereit';
+            } else {
+                dot.className = 'status-dot offline';
+                text.textContent = 'API ist offline - Bitte starten Sie die API';
+            }
+        }
+
+        // Search functionality
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Suche läuft...</div>';
+
+            try {
+                // For now, we'll simulate search results since the API needs proper indexing
+                // In production, this would be: 
+                // const response = await fetch(`${API_URL}/v1/search/${PROJECT}`, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'X-API-Key': API_KEY
+                //     },
+                //     body: JSON.stringify({
+                //         query: query,
+                //         collections: ['pages', 'news']
+                //     })
+                // });
+
+                // Simulated results for demo
+                const mockResults = [{
+                        title: `Suchergebnis für "${query}"`,
+                        url: 'https://example.com/page1',
+                        description: 'Dies ist ein Beispiel-Suchergebnis. In der echten Implementierung würden hier die Inhalte aus TYPO3 durchsucht werden.'
+                    },
+                    {
+                        title: 'TYPO3 Headless Integration',
+                        url: 'https://example.com/headless',
+                        description: 'Die Pixelcoda Search Platform integriert sich nahtlos mit TYPO3 Headless und bietet leistungsstarke Suchfunktionen.'
+                    },
+                    {
+                        title: 'Meilisearch Backend',
+                        url: 'https://example.com/meilisearch',
+                        description: 'Powered by Meilisearch für blitzschnelle Suchergebnisse mit Typo-Toleranz und Facetten-Suche.'
+                    }
+                ];
+
+                displayResults(mockResults);
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">Fehler bei der Suche: ${error.message}</div>`;
+            }
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="result-card">Keine Ergebnisse gefunden.</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = results.map(result => `
+                <div class="result-card">
+                    <div class="result-title">${result.title}</div>
+                    <a href="${result.url}" class="result-url" target="_blank">${result.url}</a>
+                    <div class="result-description">${result.description}</div>
+                </div>
+            `).join('');
+        }
+
+        // Auto-suggest functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+
+            if (query.length < 2) {
+                document.getElementById('suggestions').style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                showSuggestions(query);
+            }, 300);
+        });
+
+        function showSuggestions(query) {
+            const suggestions = [
+                'TYPO3 Headless',
+                'Pixelcoda Search',
+                'Meilisearch Integration',
+                'API Documentation',
+                'Search Configuration'
+            ].filter(s => s.toLowerCase().includes(query.toLowerCase()));
+
+            const suggestionsDiv = document.getElementById('suggestions');
+
+            if (suggestions.length === 0) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            suggestionsDiv.innerHTML = suggestions.map(s => `
+                <div class="suggestion-item" onclick="selectSuggestion('${s}')">
+                    <svg class="suggestion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    ${s}
+                </div>
+            `).join('');
+
+            suggestionsDiv.style.display = 'block';
+        }
+
+        function selectSuggestion(text) {
+            document.getElementById('searchInput').value = text;
+            document.getElementById('suggestions').style.display = 'none';
+            performSearch();
+        }
+
+        // Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Click outside to close suggestions
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-box')) {
+                document.getElementById('suggestions').style.display = 'none';
+            }
+        });
+
+        // Initialize
+        checkApiStatus();
+        setInterval(checkApiStatus, 10000); // Check every 10 seconds
+    </script>
+</body>
+
+</html>

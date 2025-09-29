@@ -1,0 +1,8 @@
+TYPO3:
+  CMS:
+    Form:
+      persistenceManager:
+        allowedExtensionPaths:
+          100: EXT:site_package/Resources/Private/Forms/
+        allowedFileMounts:
+          100: 1:/pwa-demo/form/

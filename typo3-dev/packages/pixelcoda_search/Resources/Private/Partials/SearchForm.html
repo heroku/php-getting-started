@@ -1,0 +1,68 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<!-- Accessible Search Form -->
+<form role="search" aria-label="{f:translate(key: 'search.form.label', default: 'Website durchsuchen')}" action="{f:uri.action(action: 'search')}" method="post" class="pixelcoda-search-form" id="pixelcoda-search-form">
+
+    <div class="search-input-group">
+        <label for="pixelcoda-search-input" class="search-label">
+            {f:translate(key: 'search.input.label', default: 'Suchbegriff')}
+        </label>
+
+        <div class="search-input-container">
+            <input type="search" id="pixelcoda-search-input" name="q" value="{query}" placeholder="{placeholder}" aria-describedby="pixelcoda-search-help pixelcoda-search-status" aria-expanded="false" aria-haspopup="listbox" aria-autocomplete="list" autocomplete="off" class="search-input" data-min-length="{settings.minQueryLength}" data-debounce="{settings.debounceMs}" required />
+
+            <button type="submit" class="search-submit-button" aria-label="{f:translate(key: 'search.submit.label', default: 'Suche starten')}">
+                <f:image src="EXT:pixelcoda_search/Resources/Public/Icons/Search.svg" alt="{f:translate(key: 'search.submit.icon', default: 'Suchen')}" width="20" height="20" />
+                <span class="sr-only">{f:translate(key: 'search.submit.text', default: 'Suchen')}</span>
+            </button>
+        </div>
+
+        <!-- Suggestions dropdown (populated via JavaScript) -->
+        <f:if condition="{settings.enableSuggestions}">
+            <ul id="pixelcoda-search-suggestions" role="listbox" aria-label="{f:translate(key: 'search.suggestions.label', default: 'Suchvorschläge')}" class="search-suggestions" hidden>
+                <!-- Suggestions populated dynamically -->
+            </ul>
+        </f:if>
+    </div>
+
+    <!-- Advanced filters (optional) -->
+    <f:if condition="{collections -> f:count()} > 1">
+        <div class="search-filters">
+            <fieldset>
+                <legend>{f:translate(key: 'search.filters.legend', default: 'Suchbereich einschränken')}</legend>
+
+                <f:for each="{collections}" as="collection">
+                    <div class="filter-option">
+                        <input type="checkbox" id="collection-{collection.key}" name="collections[]" value="{collection.key}" class="filter-checkbox" />
+                        <label for="collection-{collection.key}" class="filter-label">
+                            {collection.title}
+                        </label>
+                    </div>
+                </f:for>
+            </fieldset>
+        </div>
+    </f:if>
+
+    <!-- Hidden fields -->
+    <input type="hidden" name="mode" value="{settings.mode}" />
+
+    <!-- CSRF protection -->
+    <f:security.csrfToken />
+</form>
+
+<!-- Help text -->
+<div id="pixelcoda-search-help" class="search-help">
+    <p class="sr-only">
+        {f:translate(key: 'search.help.screenReader', default: 'Geben Sie Ihren Suchbegriff ein und drücken Sie Enter oder klicken Sie auf Suchen.')}
+    </p>
+    <p class="search-tip">
+        {f:translate(key: 'search.help.tip', default: 'Tipp: Verwenden Sie spezifische Begriffe für bessere Ergebnisse.')}
+    </p>
+</div>
+
+<!-- Status/Loading indicator -->
+<div id="pixelcoda-search-status" aria-live="polite" aria-atomic="true" class="search-status">
+    <!-- Status updates via JavaScript -->
+</div>
+
+</html>

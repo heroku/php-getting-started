@@ -1,0 +1,9 @@
+# Site Package Constants
+# =======================
+
+# Get rendering mode from site configuration
+plugin.tx_site_package {
+    settings {
+        renderingMode = {$site:customConfiguration.renderingMode}
+    }
+}

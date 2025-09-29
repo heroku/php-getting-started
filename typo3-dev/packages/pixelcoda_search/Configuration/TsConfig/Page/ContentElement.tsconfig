@@ -1,0 +1,14 @@
+# Add pixelcoda Search to Content Element Wizard
+mod.wizards.newContentElement.wizardItems.common {
+    elements {
+        pixelcodasearch_search {
+            iconIdentifier = content-text
+            title = LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:tt_content.CType.pixelcodasearch_search
+            description = LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:tt_content.CType.pixelcodasearch_search.description
+            tt_content_defValues {
+                CType = pixelcodasearch_search
+            }
+        }
+    }
+    show := addToList(pixelcodasearch_search)
+}

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2024-01-01T00:00:00Z" product-name="pixelcoda_search">
+        <header/>
+        <body>
+            <!-- Search Form Labels -->
+            <trans-unit id="search.placeholder" xml:space="preserve">
+                <source>Search...</source>
+            </trans-unit>
+            <trans-unit id="search.placeholder.default" xml:space="preserve">
+                <source>Website durchsuchen...</source>
+            </trans-unit>
+            <trans-unit id="search.placeholder.minimal" xml:space="preserve">
+                <source>Suchen...</source>
+            </trans-unit>
+            <trans-unit id="search.placeholder.advanced" xml:space="preserve">
+                <source>Was suchen Sie?</source>
+            </trans-unit>
+            <trans-unit id="search.placeholder.cards" xml:space="preserve">
+                <source>Suchbegriff eingeben...</source>
+            </trans-unit>
+            
+            <!-- Button Labels -->
+            <trans-unit id="search.button" xml:space="preserve">
+                <source>Search</source>
+            </trans-unit>
+            <trans-unit id="search.button.submit" xml:space="preserve">
+                <source>Suchen</source>
+            </trans-unit>
+            <trans-unit id="search.button.submit.advanced" xml:space="preserve">
+                <source>Jetzt suchen</source>
+            </trans-unit>
+            
+            <!-- Advanced Search Options -->
+            <trans-unit id="search.options.title" xml:space="preserve">
+                <source>Suchoptionen</source>
+            </trans-unit>
+            <trans-unit id="search.filter.pages" xml:space="preserve">
+                <source>Seiten durchsuchen</source>
+            </trans-unit>
+            <trans-unit id="search.filter.news" xml:space="preserve">
+                <source>News durchsuchen</source>
+            </trans-unit>
+            <trans-unit id="search.filter.content" xml:space="preserve">
+                <source>Inhalte durchsuchen</source>
+            </trans-unit>
+            <trans-unit id="search.sort.label" xml:space="preserve">
+                <source>Sortierung:</source>
+            </trans-unit>
+            <trans-unit id="search.sort.relevance" xml:space="preserve">
+                <source>Nach Relevanz</source>
+            </trans-unit>
+            <trans-unit id="search.sort.date_desc" xml:space="preserve">
+                <source>Neueste zuerst</source>
+            </trans-unit>
+            <trans-unit id="search.sort.date_asc" xml:space="preserve">
+                <source>Älteste zuerst</source>
+            </trans-unit>
+            <trans-unit id="search.sort.title" xml:space="preserve">
+                <source>Alphabetisch</source>
+            </trans-unit>
+            
+            <!-- Cards Template -->
+            <trans-unit id="search.cards.title" xml:space="preserve">
+                <source>Finden Sie was Sie suchen</source>
+            </trans-unit>
+            <trans-unit id="search.cards.description" xml:space="preserve">
+                <source>Durchsuchen Sie unsere gesamte Website nach Informationen, Produkten und Services.</source>
+            </trans-unit>
+            <trans-unit id="search.cards.popular" xml:space="preserve">
+                <source>Beliebte Suchbegriffe:</source>
+            </trans-unit>
+            <trans-unit id="search.cards.tag.products" xml:space="preserve">
+                <source>Produkte</source>
+            </trans-unit>
+            <trans-unit id="search.cards.tag.service" xml:space="preserve">
+                <source>Service</source>
+            </trans-unit>
+            <trans-unit id="search.cards.tag.contact" xml:space="preserve">
+                <source>Kontakt</source>
+            </trans-unit>
+            <trans-unit id="search.cards.tag.news" xml:space="preserve">
+                <source>News</source>
+            </trans-unit>
+            
+            <!-- Search Results Page -->
+            <trans-unit id="search.results.title" xml:space="preserve">
+                <source>Suchergebnisse</source>
+            </trans-unit>
+            <trans-unit id="search.results.found" xml:space="preserve">
+                <source>%d Ergebnis(se) für "%s" gefunden.</source>
+            </trans-unit>
+            <trans-unit id="search.results.notfound" xml:space="preserve">
+                <source>Keine Ergebnisse für "%s" gefunden.</source>
+            </trans-unit>
+            <trans-unit id="search.results.noresults" xml:space="preserve">
+                <source>Keine Ergebnisse gefunden. Versuchen Sie es mit anderen Suchbegriffen.</source>
+            </trans-unit>
+            <trans-unit id="search.results.minlength" xml:space="preserve">
+                <source>Bitte geben Sie mindestens %d Zeichen ein.</source>
+            </trans-unit>
+            <trans-unit id="search.results.page" xml:space="preserve">
+                <source>Seite:</source>
+            </trans-unit>
+            <trans-unit id="search.results.link" xml:space="preserve">
+                <source>Zur Seite →</source>
+            </trans-unit>
+            <trans-unit id="search.results.nodescription" xml:space="preserve">
+                <source>Keine Beschreibung verfügbar.</source>
+            </trans-unit>
+            
+            <!-- Pagination -->
+            <trans-unit id="search.pagination.previous" xml:space="preserve">
+                <source>« Zurück</source>
+            </trans-unit>
+            <trans-unit id="search.pagination.next" xml:space="preserve">
+                <source>Weiter »</source>
+            </trans-unit>
+            <trans-unit id="search.pagination.info" xml:space="preserve">
+                <source>Seite %d von %d | %d Ergebnisse insgesamt</source>
+            </trans-unit>
+            <trans-unit id="search.pagination.label" xml:space="preserve">
+                <source>Seitennavigation</source>
+            </trans-unit>
+            
+            <!-- Aria Labels -->
+            <trans-unit id="search.aria.input" xml:space="preserve">
+                <source>Suchbegriff eingeben</source>
+            </trans-unit>
+            <trans-unit id="search.aria.submit" xml:space="preserve">
+                <source>Suche starten</source>
+            </trans-unit>
+            <trans-unit id="search.aria.previous" xml:space="preserve">
+                <source>Vorherige</source>
+            </trans-unit>
+            <trans-unit id="search.aria.next" xml:space="preserve">
+                <source>Nächste</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

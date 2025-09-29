@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixelcoda AI Search - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2em;
+        }
+
+        .ai-chat {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-indicator.online {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .provider-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-role {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .message-text {
+            color: white;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .message.ai .message-text {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a78bfa;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                opacity: 0.3;
+            }
+
+            30% {
+                opacity: 1;
+            }
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        #aiInput {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        #aiInput:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        #aiInput::placeholder {
+            color: #64748b;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .features {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .feature-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #94a3b8;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .feature-chip:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
+            color: #a78bfa;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .info-panel {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-title {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Pixelcoda AI Search</h1>
+            <div class="subtitle">Intelligente Antworten powered by KI</div>
+        </div>
+
+        <div class="ai-chat">
+            <div class="chat-header">
+                <div class="ai-status">
+                    <span class="status-indicator" id="aiStatus"></span>
+                    <span>AI Agent</span>
+                </div>
+                <div class="provider-badge" id="providerBadge">
+                    Checking...
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-role">AI Assistant</div>
+                        <div class="message-text">
+                            Hallo! Ich bin dein KI-Assistent. Stelle mir Fragen über deine Website,
+                            Inhalte oder lass mich dir bei der Suche helfen. Ich kann:
+                            <ul style="margin-top: 10px; margin-left: 20px;">
+                                <li>Fragen zu deinen Inhalten beantworten</li>
+                                <li>Komplexe Suchanfragen verstehen</li>
+                                <li>Zusammenfassungen erstellen</li>
+                                <li>Empfehlungen geben</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <div class="input-wrapper">
+                    <input type="text" id="aiInput" placeholder="Stelle eine Frage oder suche nach Informationen..." autocomplete="off">
+                    <button class="send-button" id="sendButton" onclick="sendMessage()">
+                        <span>Senden</span>
+                        <span>→</span>
+                    </button>
+                </div>
+                <div class="features">
+                    <div class="feature-chip" onclick="askExample('Was ist TYPO3 Headless?')">
+                        Was ist TYPO3 Headless?
+                    </div>
+                    <div class="feature-chip" onclick="askExample('Wie funktioniert die Suche?')">
+                        Wie funktioniert die Suche?
+                    </div>
+                    <div class="feature-chip" onclick="askExample('Zeige mir die neuesten Inhalte')">
+                        Neueste Inhalte
+                    </div>
+                    <div class="feature-chip" onclick="askExample('Erkläre mir Meilisearch')">
+                        Über Meilisearch
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">ℹ️ KI-Provider Information</div>
+            <div class="info-text" id="providerInfo">
+                Prüfe KI-Konfiguration...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = 'http://localhost:8787';
+        const API_KEY = 'pc_read_dev_key';
+
+        // Check AI status
+        async function checkAIStatus() {
+            try {
+                // Check API health
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+
+                if (data.ok) {
+                    setAIStatus(true, 'Ollama (Lokal)');
+                    updateProviderInfo('ollama');
+                } else {
+                    setAIStatus(false, 'Offline');
+                }
+            } catch (error) {
+                setAIStatus(false, 'Nicht verbunden');
+            }
+        }
+
+        function setAIStatus(online, provider) {
+            const statusDot = document.getElementById('aiStatus');
+            const badge = document.getElementById('providerBadge');
+
+            if (online) {
+                statusDot.className = 'status-indicator online';
+                badge.textContent = provider;
+            } else {
+                statusDot.className = 'status-indicator';
+                badge.textContent = 'Offline';
+            }
+        }
+
+        function updateProviderInfo(provider) {
+            const info = document.getElementById('providerInfo');
+
+            const providerDetails = {
+                ollama: {
+                    name: 'Ollama (Lokal)',
+                    description: 'Kostenlose, lokale KI mit Llama 3.2. Läuft auf deinem Computer ohne externe API.',
+                    status: '✅ Aktiv',
+                    model: 'llama3.2',
+                    cost: 'Kostenlos'
+                },
+                openai: {
+                    name: 'OpenAI GPT-4',
+                    description: 'Höchste Qualität, cloud-basiert. Benötigt API-Key.',
+                    status: '⚠️ Konfiguration erforderlich',
+                    model: 'gpt-4o-mini',
+                    cost: '~$0.002 pro 1K Tokens'
+                }
+            };
+
+            const details = providerDetails[provider] || providerDetails.ollama;
+
+            info.innerHTML = `
+                <strong>Provider:</strong> ${details.name}<br>
+                <strong>Status:</strong> ${details.status}<br>
+                <strong>Modell:</strong> ${details.model}<br>
+                <strong>Kosten:</strong> ${details.cost}<br>
+                <strong>Info:</strong> ${details.description}
+            `;
+        }
+
+        // Chat functionality
+        function addMessage(role, text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+
+            const avatar = role === 'user' ? '👤' : '🤖';
+            const roleLabel = role === 'user' ? 'Du' : 'AI Assistant';
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-role">${roleLabel}</div>
+                    <div class="message-text">${text}</div>
+                </div>
+            `;
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showTyping() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typingIndicator';
+
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="message-role">AI Assistant</div>
+                    <div class="message-text">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typingDiv = document.getElementById('typingIndicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const button = document.getElementById('sendButton');
+            const query = input.value.trim();
+
+            if (!query) return;
+
+            // Add user message
+            addMessage('user', query);
+
+            // Clear input and disable
+            input.value = '';
+            input.disabled = true;
+            button.disabled = true;
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                // Simulate AI response (in production, this would call the API)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                hideTyping();
+
+                // Generate contextual response
+                let response = '';
+
+                if (query.toLowerCase().includes('typo3')) {
+                    response = 'TYPO3 Headless ist eine moderne Architektur, bei der TYPO3 als reines Backend-CMS fungiert und Inhalte über eine JSON-API bereitstellt. Dies ermöglicht die Verwendung moderner Frontend-Frameworks wie React, Vue oder Angular für die Darstellung. Die Pixelcoda Search Platform integriert sich nahtlos in diese Architektur.';
+                } else if (query.toLowerCase().includes('suche') || query.toLowerCase().includes('search')) {
+                    response = 'Die Suchfunktion basiert auf Meilisearch, einer blitzschnellen Open-Source-Suchmaschine. Sie bietet Features wie Typo-Toleranz, Facetten-Suche und Echtzeit-Indexierung. Die KI-Integration ermöglicht zusätzlich semantische Suche und intelligente Antworten auf Nutzeranfragen.';
+                } else if (query.toLowerCase().includes('meilisearch')) {
+                    response = 'Meilisearch ist eine Open-Source-Suchmaschine, die für ihre Geschwindigkeit und Benutzerfreundlichkeit bekannt ist. Sie bietet out-of-the-box Features wie Typo-Toleranz, Filterung, Facetten und Sortierung. In diesem Projekt läuft Meilisearch auf Port 7700 und indexiert alle TYPO3-Inhalte für blitzschnelle Suchergebnisse.';
+                } else if (query.toLowerCase().includes('neueste') || query.toLowerCase().includes('aktuell')) {
+                    response = 'Die neuesten Inhalte werden automatisch aus TYPO3 synchronisiert. Der Worker-Service überwacht Änderungen und aktualisiert den Suchindex in Echtzeit. So sind neue Inhalte sofort durchsuchbar.';
+                } else {
+                    response = `Interessante Frage! "${query}" - In einem produktiven System würde ich jetzt den Kontext analysieren und eine passende Antwort basierend auf den indexierten Inhalten generieren. Die KI kann dabei auf alle TYPO3-Seiten, News und andere Inhalte zugreifen.`;
+                }
+
+                addMessage('ai', response);
+
+            } catch (error) {
+                hideTyping();
+                addMessage('ai', '❌ Entschuldigung, es gab einen Fehler bei der Verarbeitung. Bitte versuche es später erneut.');
+            } finally {
+                input.disabled = false;
+                button.disabled = false;
+                input.focus();
+            }
+        }
+
+        function askExample(question) {
+            document.getElementById('aiInput').value = question;
+            sendMessage();
+        }
+
+        // Enter key to send
+        document.getElementById('aiInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Initialize
+        checkAIStatus();
+        setInterval(checkAIStatus, 30000); // Check every 30 seconds
+    </script>
+</body>
+
+</html>

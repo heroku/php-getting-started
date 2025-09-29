@@ -1,0 +1,87 @@
+{
+    "name": "pixelcoda/typo3-dev-environment",
+    "description": "TYPO3 Development Environment for pixelcoda Search Plugin",
+    "type": "project",
+    "license": "MIT",
+    "repositories": [{
+            "type": "composer",
+            "url": "https://composer.typo3.org/"
+        },
+        {
+            "type": "path",
+            "url": "./packages/pixelcoda_search"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^12.4",
+        "typo3/cms-backend": "^12.4",
+        "typo3/cms-frontend": "^12.4",
+        "typo3/cms-extbase": "^12.4",
+        "typo3/cms-fluid": "^12.4",
+        "typo3/cms-install": "^12.4",
+        "typo3/cms-recordlist": "^12.4",
+        "typo3/cms-setup": "^12.4",
+        "typo3/cms-rte-ckeditor": "^12.4",
+        "typo3/cms-fluid-styled-content": "^12.4",
+        "typo3/cms-tstemplate": "^12.4",
+        "typo3/cms-felogin": "^12.4",
+        "typo3/cms-form": "^12.4",
+        "typo3/cms-scheduler": "^12.4",
+        "typo3/cms-extensionmanager": "^12.4",
+        "typo3/cms-filelist": "^12.4",
+        "typo3/cms-info": "^12.4",
+        "typo3/cms-lowlevel": "^12.4",
+        "typo3/cms-reports": "^12.4",
+        "typo3/cms-sys-note": "^12.4",
+        "typo3/cms-t3editor": "^12.4",
+        "typo3/cms-viewpage": "^12.4",
+        "typo3/cms-dashboard": "^12.4",
+        "typo3/cms-redirects": "^12.4",
+        "typo3/cms-seo": "^12.4",
+        "friendsoftypo3/headless": "^4.0",
+        "georgringer/news": "^11.0",
+        "pixelcoda/pixelcoda-search": "dev-main"
+    },
+    "require-dev": {
+        "typo3/testing-framework": "^8.2",
+        "phpunit/phpunit": "^10.5",
+        "friendsofphp/php-cs-fixer": "^3.87",
+        "phpstan/phpstan": "^2.1",
+        "rector/rector": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "PixelCoda\\PixelcodaSearch\\": "packages/pixelcoda_search/Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PixelCoda\\PixelcodaSearch\\Tests\\": "packages/pixelcoda_search/Tests/"
+        }
+    },
+    "config": {
+        "vendor-dir": "vendor",
+        "bin-dir": "vendor/bin",
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        }
+    },
+    "scripts": {
+        "typo3-setup": [
+            "vendor/bin/typo3 install:setup --no-interaction --database-user-name=db --database-user-password=db --database-host-name=db --database-port=3306 --database-name=db --admin-user-name=admin --admin-password=admin --site-name='pixelcoda TYPO3 Dev'",
+            "vendor/bin/typo3 extension:activate pixelcoda_search",
+            "vendor/bin/typo3 cache:flush"
+        ],
+        "test": "phpunit -c vendor/typo3/testing-framework/Resources/Core/Build/UnitTests.xml packages/pixelcoda_search/Tests/",
+        "cs-fix": "php-cs-fixer fix packages/pixelcoda_search/",
+        "phpstan": "phpstan analyse packages/pixelcoda_search/Classes/"
+    },
+    "extra": {
+        "typo3/cms": {
+            "root-dir": ".",
+            "web-dir": "public",
+            "app-dir": "app"
+        }
+    }
+}

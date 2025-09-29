@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" date="2023-11-15T13:47:00Z"
+          product-name="site_package">
+        <header/>
+        <body>
+
+            <trans-unit id="pages.nav_icon">
+                <source>Navigation Icon</source>
+            </trans-unit>
+            <trans-unit id="pages.thumbnail">
+                <source>Thumbnail</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.extended">
+                <source>Extended</source>
+            </trans-unit>
+			<trans-unit id="backend_layout.default">
+				<source>Default</source>
+			</trans-unit>
+            <trans-unit id="backend_layout.simple">
+                <source>Simple</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.2_columns">
+                <source>2 Columns</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.2_columns_25_75">
+                <source>2 Columns 25/75</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.2_columns_50_50">
+                <source>2 Columns 50/50</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.3_columns">
+                <source>3 Columns</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.special_start">
+                <source>Special Startpage</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.subnav">
+                <source>Sub Navigation (NOEDIT)</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.left">
+                <source>Left</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.normal">
+                <source>Normal</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.right">
+                <source>Right</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.border">
+                <source>Border</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.middle1">
+                <source>Middle: Left</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.middle2">
+                <source>Middle: Center</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.middle3">
+                <source>Middle: Right</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.main2">
+                <source>Normal 2</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.contentbefore">
+                <source>Before Content</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.contentafter">
+                <source>After Content</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.special1">
+                <source>Special 1</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special2">
+                <source>Special 2</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special3">
+                <source>Special 3</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special4">
+                <source>Special 4</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special5">
+                <source>Special 5</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special6">
+                <source>Special 6</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special7">
+                <source>Special 7</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special8">
+                <source>Special 8</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special9">
+                <source>Special 9</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.special10">
+                <source>Special 10</source>
+            </trans-unit>
+
+            <trans-unit id="backend_layout.column.footer1">
+                <source>Footer: Left</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.footer2">
+                <source>Footer: Center</source>
+            </trans-unit>
+            <trans-unit id="backend_layout.column.footer3">
+                <source>Footer: Right</source>
+            </trans-unit>
+
+        </body>
+    </file>
+</xliff>

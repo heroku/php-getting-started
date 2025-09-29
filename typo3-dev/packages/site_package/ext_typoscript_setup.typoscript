@@ -1,0 +1,90 @@
+# Site Package - Override Headless based on Mode
+# =================================================
+# This file loads AFTER all other extensions
+
+# FORCE OVERRIDE - Clear everything first
+page >
+config >
+tt_content >
+lib >
+
+# Check rendering mode and override accordingly
+[traverse(site:customConfiguration, 'renderingMode') == 'standard']
+    # OVERRIDE HEADLESS - Switch to Standard Mode
+    # ============================================
+    
+    # Reset page object completely
+    page >
+    page = PAGE
+    page {
+        typeNum = 0
+        
+        # Standard HTML headers
+        config {
+            doctype = html5
+            xmlprologue = none
+            disableAllHeaderCode = 0
+            removeDefaultJS = 0
+            additionalHeaders >
+            additionalHeaders {
+                10.header = X-Powered-By: TYPO3 CMS
+            }
+        }
+        
+        # Meta tags
+        meta {
+            viewport = width=device-width, initial-scale=1
+            X-UA-Compatible = IE=edge
+        }
+        
+        # Include CSS
+        includeCSS {
+            normalize = EXT:site_package/Resources/Public/Css/normalize.css
+            main = EXT:site_package/Resources/Public/Css/main.css
+        }
+        
+        # Include JavaScript
+        includeJSFooter {
+            main = EXT:site_package/Resources/Public/JavaScript/main.js
+        }
+        
+        # Main content
+        10 = FLUIDTEMPLATE
+        10 {
+            templateName = Default
+            
+            templateRootPaths {
+                10 = EXT:site_package/Resources/Private/Templates/Page/
+            }
+            
+            partialRootPaths {
+                10 = EXT:site_package/Resources/Private/Partials/Page/
+            }
+            
+            layoutRootPaths {
+                10 = EXT:site_package/Resources/Private/Layouts/Page/
+            }
+            
+            variables {
+                content < styles.content.get
+                content.select.where = {#colPos}=0
+            }
+        }
+    }
+    
+    # Override content element rendering
+    tt_content >
+    @import 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript'
+    
+[ELSE]
+    # Headless Mode - Load Headless Extension
+    @import 'EXT:headless/Configuration/TypoScript/setup.typoscript'
+    
+    # Reset config
+    config {
+        disableAllHeaderCode = 0
+        additionalHeaders >
+        debug = 0
+        admPanel = 1
+    }
+[END]

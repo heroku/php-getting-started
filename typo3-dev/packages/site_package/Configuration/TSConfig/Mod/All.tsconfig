@@ -1,0 +1,3 @@
+@import 'EXT:site_package/Configuration/TSConfig/Mod/BackendLayouts.tsconfig'
+@import 'EXT:site_package/Configuration/TSConfig/Mod/ContentElements.tsconfig'
+@import 'EXT:site_package/Configuration/TSConfig/Mod/TCEMAIN.tsconfig'

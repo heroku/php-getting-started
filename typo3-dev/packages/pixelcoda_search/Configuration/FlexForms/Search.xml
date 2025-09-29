@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+    <sheets>
+        <sDEF>
+            <ROOT>
+                <TCEforms>
+                    <sheetTitle>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.general</sheetTitle>
+                </TCEforms>
+                <type>array</type>
+                <el>
+                    <settings.mode>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.mode</label>
+                            <description>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.mode.description</description>
+                            <config>
+                                <type>select</type>
+                                <renderType>selectSingle</renderType>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex index="0">LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.mode.classic</numIndex>
+                                        <numIndex index="1">classic</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex index="0">LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.mode.headless</numIndex>
+                                        <numIndex index="1">headless</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>classic</default>
+                            </config>
+                        </TCEforms>
+                    </settings.mode>
+                    
+                    <settings.template>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.template</label>
+                            <config>
+                                <type>select</type>
+                                <renderType>selectSingle</renderType>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex index="0">Standard</numIndex>
+                                        <numIndex index="1">Default</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex index="0">Minimal</numIndex>
+                                        <numIndex index="1">Minimal</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2">
+                                        <numIndex index="0">Erweitert</numIndex>
+                                        <numIndex index="1">Advanced</numIndex>
+                                    </numIndex>
+                                    <numIndex index="3">
+                                        <numIndex index="0">Karten-Layout</numIndex>
+                                        <numIndex index="1">Cards</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>Default</default>
+                            </config>
+                        </TCEforms>
+                    </settings.template>
+
+                    <settings.collections>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.collections</label>
+                            <description>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.collections.description</description>
+                            <config>
+                                <type>select</type>
+                                <renderType>selectCheckBox</renderType>
+                                <items>
+                                    <numIndex index="0">
+                                        <numIndex index="0">LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:collections.pages</numIndex>
+                                        <numIndex index="1">pages</numIndex>
+                                    </numIndex>
+                                    <numIndex index="1">
+                                        <numIndex index="0">LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:collections.news</numIndex>
+                                        <numIndex index="1">news</numIndex>
+                                    </numIndex>
+                                    <numIndex index="2">
+                                        <numIndex index="0">LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:collections.content</numIndex>
+                                        <numIndex index="1">tt_content</numIndex>
+                                    </numIndex>
+                                </items>
+                                <default>pages,news</default>
+                                <maxitems>10</maxitems>
+                            </config>
+                        </TCEforms>
+                    </settings.collections>
+                </el>
+            </ROOT>
+        </sDEF>
+        
+        <sDisplay>
+            <ROOT>
+                <TCEforms>
+                    <sheetTitle>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.display</sheetTitle>
+                </TCEforms>
+                <type>array</type>
+                <el>
+                    <settings.resultsPerPage>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.resultsPerPage</label>
+                            <config>
+                                <type>number</type>
+                                <range>
+                                    <lower>1</lower>
+                                    <upper>100</upper>
+                                </range>
+                                <default>10</default>
+                            </config>
+                        </TCEforms>
+                    </settings.resultsPerPage>
+
+                    <settings.placeholder>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.placeholder</label>
+                            <config>
+                                <type>input</type>
+                                <size>50</size>
+                                <max>255</max>
+                                <default>Website durchsuchen...</default>
+                            </config>
+                        </TCEforms>
+                    </settings.placeholder>
+
+                    <settings.cssClass>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.cssClass</label>
+                            <config>
+                                <type>input</type>
+                                <size>30</size>
+                                <max>255</max>
+                                <default>pixelcoda-search</default>
+                            </config>
+                        </TCEforms>
+                    </settings.cssClass>
+
+                    <settings.enableSuggestions>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.enableSuggestions</label>
+                            <config>
+                                <type>check</type>
+                                <default>1</default>
+                            </config>
+                        </TCEforms>
+                    </settings.enableSuggestions>
+
+                    <settings.enableAsk>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.enableAsk</label>
+                            <description>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.enableAsk.description</description>
+                            <config>
+                                <type>check</type>
+                                <default>1</default>
+                            </config>
+                        </TCEforms>
+                    </settings.enableAsk>
+                </el>
+            </ROOT>
+        </sDisplay>
+
+        <sAdvanced>
+            <ROOT>
+                <TCEforms>
+                    <sheetTitle>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.advanced</sheetTitle>
+                </TCEforms>
+                <type>array</type>
+                <el>
+                    <settings.maxPassages>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.maxPassages</label>
+                            <description>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.maxPassages.description</description>
+                            <config>
+                                <type>number</type>
+                                <range>
+                                    <lower>1</lower>
+                                    <upper>20</upper>
+                                </range>
+                                <default>6</default>
+                            </config>
+                        </TCEforms>
+                    </settings.maxPassages>
+
+                    <settings.showDebug>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.showDebug</label>
+                            <description>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.showDebug.description</description>
+                            <config>
+                                <type>check</type>
+                                <default>0</default>
+                            </config>
+                        </TCEforms>
+                    </settings.showDebug>
+
+                    <settings.enableMetrics>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.enableMetrics</label>
+                            <config>
+                                <type>check</type>
+                                <default>1</default>
+                            </config>
+                        </TCEforms>
+                    </settings.enableMetrics>
+
+                    <settings.minQueryLength>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.minQueryLength</label>
+                            <config>
+                                <type>number</type>
+                                <range>
+                                    <lower>1</lower>
+                                    <upper>10</upper>
+                                </range>
+                                <default>2</default>
+                            </config>
+                        </TCEforms>
+                    </settings.minQueryLength>
+
+                    <settings.debounceMs>
+                        <TCEforms>
+                            <label>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.debounceMs</label>
+                            <description>LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang_db.xlf:flexform.debounceMs.description</description>
+                            <config>
+                                <type>number</type>
+                                <range>
+                                    <lower>100</lower>
+                                    <upper>2000</upper>
+                                </range>
+                                <default>300</default>
+                            </config>
+                        </TCEforms>
+                    </settings.debounceMs>
+                </el>
+            </ROOT>
+        </sAdvanced>
+    </sheets>
+</T3DataStructure>

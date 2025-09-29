@@ -1,0 +1,8 @@
+pages
+,uid,pid,title,slug,abstract,keywords,hidden,deleted
+,1,0,"Root Page","/","Root abstract","root,test",0,0
+,2,1,"Test Page","/test","Test page abstract","test,page",0,0
+,3,1,"Another Test","/another-test","Another test abstract","test,another",0,0
+,4,1,"Category Test Page","/category-test","Category test abstract","category,test",0,0
+,5,1,"Uncategorized Page","/uncategorized","Uncategorized abstract","uncategorized",0,0
+,6,1,"Hidden Page","/hidden","Hidden abstract","hidden",1,0

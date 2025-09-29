@@ -1,0 +1,75 @@
+# pixelcoda Search TypoScript Constants
+
+plugin.tx_pixelcodasearch_search {
+    view {
+        # cat=plugin.tx_pixelcodasearch_search/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:pixelcoda_search/Resources/Private/Templates/
+        
+        # cat=plugin.tx_pixelcodasearch_search/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:pixelcoda_search/Resources/Private/Partials/
+        
+        # cat=plugin.tx_pixelcodasearch_search/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:pixelcoda_search/Resources/Private/Layouts/
+    }
+    
+    persistence {
+        # cat=plugin.tx_pixelcodasearch_search/links; type=string; label=Default storage PID
+        storagePid =
+    }
+    
+    settings {
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=options[classic,headless]; label=Plugin Mode
+        mode = classic
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=int+; label=Results per page
+        resultsPerPage = 10
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=int+; label=Max passages for AI answers
+        maxPassages = 6
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=boolean; label=Enable search suggestions
+        enableSuggestions = 1
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=boolean; label=Enable AI-powered ask feature
+        enableAsk = 1
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=boolean; label=Show debug information
+        showDebug = 0
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=string; label=Collections to search (comma-separated)
+        collections = pages,news
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=string; label=Search placeholder text
+        placeholder = Website durchsuchen...
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=options[Default,Minimal,Advanced,Cards]; label=Template variant
+        template = Default
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=string; label=CSS class for wrapper
+        cssClass = pixelcoda-search
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=boolean; label=Enable usage metrics
+        enableMetrics = 1
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=int+; label=Minimum query length
+        minQueryLength = 2
+        
+        # cat=plugin.tx_pixelcodasearch_search/basic; type=int+; label=Debounce delay (ms)
+        debounceMs = 300
+    }
+}
+
+# API Configuration
+pixelcoda.search {
+    # cat=pixelcoda.search/api; type=string; label=API Base URL
+    apiUrl = http://localhost:8787
+    
+    # cat=pixelcoda.search/api; type=string; label=Project ID
+    projectId = typo3
+    
+    # cat=pixelcoda.search/api; type=string; label=Read API Key (for frontend)
+    readApiKey = 
+    
+    # cat=pixelcoda.search/api; type=boolean; label=Enable debug mode
+    debugMode = 0
+}

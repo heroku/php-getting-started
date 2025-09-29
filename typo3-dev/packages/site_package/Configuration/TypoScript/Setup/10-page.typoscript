@@ -1,0 +1,127 @@
+# Global Page Configuration with Mode Switch
+# ============================================
+# This configuration allows switching between:
+# - Headless Mode: JSON output for React/Vue/Next.js
+# - Standard Mode: Traditional TYPO3 with Fluid templates
+
+# Mode detection from site configuration
+[traverse(site:customConfiguration, 'renderingMode') == 'headless']
+    # HEADLESS MODE - JSON Output
+    @import 'EXT:headless/Configuration/TypoScript/setup.typoscript'
+    
+    # JSON page type
+    page = PAGE
+    page {
+        typeNum = 0
+        
+        # Force JSON output
+        config {
+            disableAllHeaderCode = 1
+            additionalHeaders.10.header = Content-Type: application/json;charset=utf-8
+            admPanel = 0
+            debug = 0
+        }
+        
+        10 = CONTENT
+        10 {
+            table = tt_content
+            select {
+                orderBy = sorting
+                where = {#colPos}=0
+            }
+            renderObj =< tt_content
+        }
+    }
+    
+    # Alternative JSON endpoint
+    pageJson = PAGE
+    pageJson {
+        typeNum = 834
+        config < page.config
+        10 < page.10
+    }
+    
+[ELSE]
+    # STANDARD MODE - Fluid Templates
+    page = PAGE
+    page {
+        typeNum = 0
+        
+        # Meta tags
+        meta {
+            viewport = width=device-width, initial-scale=1
+            robots = index,follow
+            author = Pixelcoda
+        }
+        
+        # Include CSS
+        includeCSS {
+            main = EXT:site_package/Resources/Public/Css/main.css
+            search = EXT:pixelcoda_search/Resources/Public/Css/search.css
+        }
+        
+        # Include JavaScript
+        includeJSFooter {
+            main = EXT:site_package/Resources/Public/JavaScript/main.js
+            search = EXT:pixelcoda_search/Resources/Public/JavaScript/search.js
+        }
+        
+        # Page template
+        10 = FLUIDTEMPLATE
+        10 {
+            templateName = Default
+            
+            templateRootPaths {
+                10 = EXT:site_package/Resources/Private/Templates/Page/
+            }
+            
+            partialRootPaths {
+                10 = EXT:site_package/Resources/Private/Partials/Page/
+            }
+            
+            layoutRootPaths {
+                10 = EXT:site_package/Resources/Private/Layouts/Page/
+            }
+            
+            dataProcessing {
+                10 = TYPO3\CMS\Frontend\DataProcessing\MenuProcessor
+                10 {
+                    levels = 2
+                    as = mainMenu
+                }
+            }
+            
+            variables {
+                content0 < styles.content.get
+                content0.select.where = {#colPos}=0
+                
+                content1 < styles.content.get
+                content1.select.where = {#colPos}=1
+                
+                content2 < styles.content.get
+                content2.select.where = {#colPos}=2
+            }
+        }
+    }
+[END]
+
+# API endpoint for both modes
+api = PAGE
+api {
+    typeNum = 1234
+    config {
+        disableAllHeaderCode = 1
+        additionalHeaders.10.header = Content-Type: application/json;charset=utf-8
+        admPanel = 0
+    }
+    
+    10 = USER
+    10 {
+        userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+        extensionName = PixelcodaSearch
+        pluginName = Api
+        vendorName = PixelCoda
+        controller = Api
+        action = index
+    }
+}

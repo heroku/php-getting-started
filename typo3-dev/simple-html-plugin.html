@@ -1,0 +1,141 @@
+<!-- PIXELCODA SEARCH - EINFACHES HTML PLUGIN -->
+<!-- Kopiere diesen Code in ein HTML Content Element -->
+
+<div class="pixelcoda-search" style="max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="color: #333; margin-bottom: 20px;">🚀 pixelcoda Search</h2>
+    <p style="color: green; font-weight: bold;">✅ Plugin loaded successfully!</p>
+    <p>API Status: <span id="api-status" style="font-weight: bold;">Checking...</span></p>
+
+    <form onsubmit="return performSearch(event)" style="margin: 20px 0;">
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input type="search" id="search-query" placeholder="Search..." required style="flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;">
+            <button type="submit" style="padding: 12px 24px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">
+                Search
+            </button>
+        </div>
+    </form>
+
+    <div id="search-results" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+    // API Status Check
+    fetch("http://localhost:8787/health")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("api-status").innerHTML = "✅ Connected";
+            document.getElementById("api-status").style.color = "green";
+        })
+        .catch(error => {
+            document.getElementById("api-status").innerHTML = "❌ Offline";
+            document.getElementById("api-status").style.color = "red";
+            console.error('API connection failed:', error);
+        });
+
+    // Search Function
+    async function performSearch(event) {
+        event.preventDefault();
+
+        const query = document.getElementById("search-query").value.trim();
+        const resultsDiv = document.getElementById("search-results");
+
+        if (!query) {
+            resultsDiv.innerHTML = '<p style="color: orange;">Please enter a search query.</p>';
+            return false;
+        }
+
+        // Show loading state
+        resultsDiv.innerHTML = '<p style="color: #666;">🔍 Searching...</p>';
+
+        try {
+            const response = await fetch("http://localhost:8787/v1/search/demo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    q: query,
+                    limit: 10,
+                    collections: ["pages", "tt_content", "news"]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            if (data.data && data.data.length > 0) {
+                let html = '<h3 style="color: #333; margin-bottom: 15px;">📋 Search Results:</h3>';
+
+                data.data.forEach((result, index) => {
+                    html += `
+                    <div style="border: 1px solid #e0e0e0; padding: 15px; margin: 10px 0; border-radius: 6px; background: #fafafa;">
+                        <h4 style="margin: 0 0 8px 0; color: #007cba;">
+                            ${result.attributes.title || 'Untitled'}
+                        </h4>
+                        <p style="margin: 0 0 8px 0; color: #666; font-size: 14px;">
+                            ${result.attributes.summary || result.attributes.content || 'No description available'}
+                        </p>
+                        <small style="color: #999;">
+                            Type: ${result.attributes.type || 'Unknown'} | 
+                            Score: ${result.attributes.score ? Math.round(result.attributes.score * 100) + '%' : 'N/A'}
+                        </small>
+                    </div>
+                `;
+                });
+
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = '<p style="color: #666;">❌ No results found for "' + query + '"</p>';
+            }
+
+        } catch (error) {
+            console.error('Search error:', error);
+            resultsDiv.innerHTML = `
+            <div style="color: red; padding: 15px; border: 1px solid #ffcccb; border-radius: 4px; background: #ffe6e6;">
+                <strong>❌ Search Error:</strong><br>
+                ${error.message}<br>
+                <small>Check console for details. Make sure the API is running on http://localhost:8787</small>
+            </div>
+        `;
+        }
+
+        return false;
+    }
+
+    // Add some basic styling
+    const style = document.createElement('style');
+    style.textContent = `
+    .pixelcoda-search input:focus {
+        outline: none;
+        border-color: #007cba;
+        box-shadow: 0 0 5px rgba(0, 124, 186, 0.3);
+    }
+    
+    .pixelcoda-search button:hover {
+        background: #005a87;
+    }
+    
+    .pixelcoda-search button:active {
+        transform: translateY(1px);
+    }
+`;
+    document.head.appendChild(style);
+</script>
+
+<!-- 
+INSTALLATION:
+1. Gehe zu Web > Page in TYPO3 Backend
+2. Wähle eine Seite aus
+3. Klicke auf "+ Content"
+4. Wähle "HTML" Content Element
+5. Kopiere den obigen Code in das HTML-Feld
+6. Speichere und schau dir die Seite im Frontend an
+
+VORAUSSETZUNGEN:
+- pixelcoda Search API läuft auf http://localhost:8787
+- API ist erreichbar vom Frontend
+-->

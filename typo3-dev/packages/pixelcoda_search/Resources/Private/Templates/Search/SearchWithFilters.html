@@ -1,0 +1,245 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Main">
+    <div class="search-results-container">
+        <h1>
+            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.title" />
+        </h1>
+
+        <!-- Search Form with Filters -->
+        <div class="search-form-wrapper">
+            <form class="search-form" action="" method="get">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" name="q" value="{searchQuery}" placeholder="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.placeholder.default')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.input')}">
+                    <button type="submit" class="search-button" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.submit')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <span>
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.button.submit" /></span>
+                    </button>
+                </div>
+
+                <!-- Filter Options -->
+                <div class="search-filters-container">
+                    <button type="button" class="filter-toggle" onclick="toggleFilters()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        Filter anzeigen
+                    </button>
+
+                    <div class="search-filters" id="searchFilters" style="display: none;">
+                        <div class="filter-row">
+                            <!-- Search In -->
+                            <div class="filter-group">
+                                <label class="filter-label">Suchen in:</label>
+                                <div class="filter-checkboxes">
+                                    <label>
+                                        <input type="checkbox" name="filter_pages" value="1" {f:if(condition: filters.searchIn.pages, then: 'checked' )}>
+                                        Seiten
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="filter_content" value="1" {f:if(condition: filters.searchIn.content, then: 'checked' )}>
+                                        Inhalte
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="filter_news" value="1" {f:if(condition: filters.searchIn.news, then: 'checked' )}>
+                                        News
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="filter-group">
+                                <label for="category" class="filter-label">Kategorie:</label>
+                                <select name="category" id="category" class="filter-select">
+                                    <option value="">Alle Kategorien</option>
+                                    <f:for each="{availableCategories}" as="cat">
+                                        <option value="{cat.uid}" {f:if(condition: '{cat.uid} == {filters.category}' , then: 'selected' )}>
+                                            {cat.title}
+                                        </option>
+                                    </f:for>
+                                </select>
+                            </div>
+
+                            <!-- Sort Order -->
+                            <div class="filter-group">
+                                <label for="sort" class="filter-label">Sortierung:</label>
+                                <select name="sort" id="sort" class="filter-select">
+                                    <option value="relevance" {f:if(condition: '{filters.sort} == \' relevance\'', then: 'selected' )}>Relevanz</option>
+                                    <option value="date_desc" {f:if(condition: '{filters.sort} == \' date_desc\'', then: 'selected' )}>Neueste zuerst</option>
+                                    <option value="date_asc" {f:if(condition: '{filters.sort} == \' date_asc\'', then: 'selected' )}>Älteste zuerst</option>
+                                    <option value="title" {f:if(condition: '{filters.sort} == \' title\'', then: 'selected' )}>Alphabetisch</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-row">
+                            <!-- Date Range -->
+                            <div class="filter-group">
+                                <label for="date_from" class="filter-label">Von Datum:</label>
+                                <input type="date" name="date_from" id="date_from" class="filter-input" value="{filters.dateFrom}">
+                            </div>
+
+                            <div class="filter-group">
+                                <label for="date_to" class="filter-label">Bis Datum:</label>
+                                <input type="date" name="date_to" id="date_to" class="filter-input" value="{filters.dateTo}">
+                            </div>
+
+                            <!-- Content Type -->
+                            <div class="filter-group">
+                                <label for="content_type" class="filter-label">Inhaltstyp:</label>
+                                <select name="content_type" id="content_type" class="filter-select">
+                                    <option value="all">Alle Typen</option>
+                                    <option value="text" {f:if(condition: '{filters.contentType} == \' text\'', then: 'selected' )}>Text</option>
+                                    <option value="image" {f:if(condition: '{filters.contentType} == \' image\'', then: 'selected' )}>Bilder</option>
+                                    <option value="media" {f:if(condition: '{filters.contentType} == \' media\'', then: 'selected' )}>Media</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-apply-filters">Filter anwenden</button>
+                            <button type="button" class="btn-reset-filters" onclick="resetFilters()">Zurücksetzen</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Active Filters Display -->
+        <f:if condition="{filters.category} || {filters.dateFrom} || {filters.dateTo}">
+            <div class="active-filters">
+                <span class="active-filters-label">Aktive Filter:</span>
+                <f:if condition="{filters.category}">
+                    <span class="filter-tag">
+                        Kategorie: <f:for each="{availableCategories}" as="cat">
+                            <f:if condition="{cat.uid} == {filters.category}">{cat.title}</f:if>
+                        </f:for>
+                        <a href="?q={searchQuery}" class="remove-filter">×</a>
+                    </span>
+                </f:if>
+                <f:if condition="{filters.dateFrom}">
+                    <span class="filter-tag">
+                        Von: {filters.dateFrom -> f:format.date(format: 'd.m.Y')}
+                        <a href="?q={searchQuery}" class="remove-filter">×</a>
+                    </span>
+                </f:if>
+                <f:if condition="{filters.dateTo}">
+                    <span class="filter-tag">
+                        Bis: {filters.dateTo -> f:format.date(format: 'd.m.Y')}
+                        <a href="?q={searchQuery}" class="remove-filter">×</a>
+                    </span>
+                </f:if>
+            </div>
+        </f:if>
+
+        <!-- Message -->
+        <f:if condition="{message}">
+            <p class="search-message">{message}</p>
+        </f:if>
+
+        <!-- Results -->
+        <f:if condition="{results}">
+            <f:then>
+                <div class="search-results">
+                    <div class="results-header">
+                        <span class="results-count">{totalResults} Ergebnisse gefunden</span>
+                    </div>
+
+                    <f:for each="{results}" as="result">
+                        <article class="search-result-item">
+                            <div class="result-header">
+                                <h2 class="search-result-title">
+                                    <a href="{result.url}">{result.title}</a>
+                                </h2>
+                                <div class="result-meta">
+                                    <f:if condition="{result.type}">
+                                        <span class="result-type result-type-{result.type}">{result.type}</span>
+                                    </f:if>
+                                    <f:if condition="{result.date}">
+                                        <span class="result-date">{result.date -> f:format.date(format: 'd.m.Y')}</span>
+                                    </f:if>
+                                </div>
+                            </div>
+
+                            <f:if condition="{result.page}">
+                                <span class="search-result-page">Seite: {result.page}</span>
+                            </f:if>
+
+                            <p class="search-result-abstract">{result.abstract}</p>
+
+                            <f:if condition="{result.categories}">
+                                <div class="result-categories">
+                                    <f:for each="{result.categories}" as="category">
+                                        <span class="category-tag">{category}</span>
+                                    </f:for>
+                                </div>
+                            </f:if>
+
+                            <a href="{result.url}" class="search-result-link">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.link" />
+                            </a>
+                        </article>
+                    </f:for>
+                </div>
+
+                <!-- Pagination -->
+                <f:if condition="{pagination}">
+                    <nav class="pagination-wrapper" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.label')}">
+                        <ul class="pagination">
+                            <f:if condition="{pagination.prev}">
+                                <li class="page-item">
+                                    <a class="page-link" href="?q={searchQuery}&page={pagination.prev}{f:if(condition: filters.category, then: '&category={filters.category}')}{f:if(condition: filters.sort, then: '&sort={filters.sort}')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.previous')}">
+                                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.previous" />
+                                    </a>
+                                </li>
+                            </f:if>
+
+                            <f:for each="{pagination.pages}" as="pageNumber">
+                                <li class="page-item {f:if(condition: '{pageNumber} == {pagination.current}', then: 'active')}">
+                                    <f:if condition="{pageNumber} == {pagination.current}">
+                                        <f:then>
+                                            <span class="page-link current">{pageNumber}</span>
+                                        </f:then>
+                                        <f:else>
+                                            <a class="page-link" href="?q={searchQuery}&page={pageNumber}{f:if(condition: filters.category, then: '&category={filters.category}')}{f:if(condition: filters.sort, then: '&sort={filters.sort}')}">{pageNumber}</a>
+                                        </f:else>
+                                    </f:if>
+                                </li>
+                            </f:for>
+
+                            <f:if condition="{pagination.next}">
+                                <li class="page-item">
+                                    <a class="page-link" href="?q={searchQuery}&page={pagination.next}{f:if(condition: filters.category, then: '&category={filters.category}')}{f:if(condition: filters.sort, then: '&sort={filters.sort}')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.next')}">
+                                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.next" />
+                                    </a>
+                                </li>
+                            </f:if>
+                        </ul>
+                        <p class="pagination-info">
+                            <f:format.printf arguments="{0: pagination.current, 1: pagination.total, 2: totalResults}">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.info" />
+                            </f:format.printf>
+                        </p>
+                    </nav>
+                </f:if>
+            </f:then>
+            <f:else>
+                <f:if condition="{searchQuery}">
+                    <div class="no-results">
+                        <p>
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.noresults" />
+                        </p>
+                    </div>
+                </f:if>
+            </f:else>
+        </f:if>
+    </div>
+</f:section>
+
+</html>

@@ -1,0 +1,71 @@
+{
+    "name": "pixelcoda/pixelcoda-search",
+    "description": "pixelcoda Search Extension for TYPO3",
+    "type": "typo3-cms-extension",
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "typo3/cms-core": "^12.4",
+        "typo3/cms-backend": "^12.4",
+        "typo3/cms-frontend": "^12.4",
+        "typo3/cms-extbase": "^12.4",
+        "typo3/cms-fluid": "^12.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0",
+        "typo3/testing-framework": "^8.0",
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "rector/rector": "^1.0",
+        "ssch/typo3-rector": "^2.0",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/extension-installer": "^1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "PixelCoda\\PixelcodaSearch\\": "Classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PixelCoda\\PixelcodaSearch\\Tests\\": "Tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@test:functional"
+        ],
+        "test:unit": "phpunit -c Tests/Build/UnitTests.xml",
+        "test:functional": "phpunit -c Tests/Build/FunctionalTests.xml",
+        "test:coverage": [
+            "@test:unit --coverage-html Tests/Coverage/Unit",
+            "@test:functional --coverage-html Tests/Coverage/Functional"
+        ],
+        "fix:php-cs": "php-cs-fixer fix",
+        "fix:rector": "rector process",
+        "check:php-cs": "php-cs-fixer fix --dry-run --diff",
+        "check:rector": "rector process --dry-run",
+        "check:phpstan": "phpstan analyse -c phpstan.neon",
+        "ci": [
+            "@check:php-cs",
+            "@check:rector",
+            "@check:phpstan",
+            "@test"
+        ]
+    },
+    "config": {
+        "vendor-dir": "../../vendor",
+        "bin-dir": "../../bin",
+        "allow-plugins": {
+            "typo3/cms-composer-installers": true,
+            "typo3/class-alias-loader": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "pixelcoda_search"
+        }
+    }
+}

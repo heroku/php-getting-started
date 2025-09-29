@@ -1,0 +1,129 @@
+# Include TypoScript Setup
+@import 'EXT:pixelcoda_search/Configuration/TypoScript/setup.typoscript'
+
+# OVERRIDE after Headless Extension
+# This must be loaded AFTER the headless extension
+tt_content.pixelcodasearch_search >
+tt_content.pixelcodasearch_search = JSON
+tt_content.pixelcodasearch_search {
+    fields {
+        id = INT
+        id.field = uid
+        
+        type = TEXT
+        type.field = CType
+        
+        colPos = INT
+        colPos.field = colPos
+        
+        categories = TEXT
+        categories.value = 
+        
+        appearance = JSON
+        appearance {
+            fields {
+                layout = TEXT
+                layout.field = layout
+                layout.ifEmpty = default
+                
+                frameClass = TEXT
+                frameClass.field = frame_class
+                frameClass.ifEmpty = default
+                
+                spaceBefore = TEXT
+                spaceBefore.field = space_before_class
+                spaceBefore.ifEmpty = 
+                
+                spaceAfter = TEXT
+                spaceAfter.field = space_after_class
+                spaceAfter.ifEmpty = 
+            }
+        }
+        
+        content = JSON
+        content {
+            fields {
+                header = TEXT
+                header.field = header
+                header.ifEmpty = 
+                
+                subheader = TEXT
+                subheader.field = subheader
+                subheader.ifEmpty = 
+                
+                headerLayout = INT
+                headerLayout.field = header_layout
+                headerLayout.ifEmpty = 0
+                
+                headerPosition = TEXT
+                headerPosition.field = header_position
+                headerPosition.ifEmpty = 
+                
+                headerLink = TEXT
+                headerLink.field = header_link
+                headerLink.ifEmpty = 
+                
+                # Plugin-specific fields
+                pluginType = TEXT
+                pluginType.value = pixelcodasearch_search
+                
+                mode = TEXT
+                mode.value = headless
+                
+                placeholder = TEXT
+                placeholder.value = Website durchsuchen...
+                
+                searchConfig = JSON
+                searchConfig {
+                    fields {
+                        mode = TEXT
+                        mode.value = headless
+                        
+                        placeholder = TEXT
+                        placeholder.value = Website durchsuchen...
+                        
+                        resultsPerPage = INT
+                        resultsPerPage.value = 10
+                        
+                        collections = TEXT
+                        collections.value = pages,news
+                        
+                        enableSuggestions = INT
+                        enableSuggestions.value = 1
+                        
+                        enableAsk = INT
+                        enableAsk.value = 1
+                    }
+                }
+                
+                endpoints = JSON
+                endpoints {
+                    fields {
+                        search = TEXT
+                        search.value = /api/search
+                        
+                        ask = TEXT
+                        ask.value = /api/ask
+                        
+                        suggest = TEXT
+                        suggest.value = /api/suggest
+                    }
+                }
+                
+                ui = JSON
+                ui {
+                    fields {
+                        showSuggestions = INT
+                        showSuggestions.value = 1
+                        
+                        showAsk = INT
+                        showAsk.value = 1
+                        
+                        template = TEXT
+                        template.value = Default
+                    }
+                }
+            }
+        }
+    }
+}

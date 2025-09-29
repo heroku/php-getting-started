@@ -1,0 +1,44 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Header">
+    <f:if condition="{data.header}">
+        <f:render partial="Header/Header" arguments="{
+            header: data.header,
+            layout: data.header_layout,
+            positionClass: '{f:if(condition: data.header_position, then: \'ce-headline-{data.header_position}\')}'
+        }" />
+    </f:if>
+</f:section>
+
+<f:section name="Main">
+    <div class="pixelcoda-search">
+        <form class="search-form" action="/search" method="get">
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" name="q" placeholder="{f:if(condition: flexform_data.settings.placeholder, then: flexform_data.settings.placeholder, else: '{f:translate(key: \'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.placeholder.default\')}')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.input')}">
+                <button type="submit" class="search-button" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.submit')}">
+                    <f:comment>
+                        <!-- Search Icon SVG -->
+                    </f:comment>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <span>
+                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.button.submit" /></span>
+                </button>
+            </div>
+        </form>
+
+        <f:if condition="{data.pi_flexform.showSuggestions}">
+            <div class="search-suggestions" id="search-suggestions-{data.uid}" style="display: none;">
+                <f:comment>
+                    <!-- Suggestions will be populated via JavaScript -->
+                </f:comment>
+            </div>
+        </f:if>
+    </div>
+</f:section>
+
+</html>

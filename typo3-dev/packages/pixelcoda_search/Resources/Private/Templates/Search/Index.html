@@ -1,0 +1,300 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+
+<f:layout name="Default" />
+
+<f:section name="Main">
+    <div class="pixelcoda-search-container" data-search-config='{searchConfigJson}'>
+        <div class="search-wrapper">
+            <h2 class="search-title">
+                <f:if condition="{data.header}">
+                    <f:then>{data.header}</f:then>
+                    <f:else>Suche</f:else>
+                </f:if>
+            </h2>
+
+            <form class="search-form" id="pixelcoda-search-form" data-api-url="{settings.apiUrl}">
+                <div class="search-input-group">
+                    <input type="text" class="search-input" id="search-input" placeholder="{settings.placeholder -> f:format.raw()}" autocomplete="off">
+                    <button type="submit" class="search-button">
+                        <span class="search-icon">🔍</span>
+                        <span class="search-text">Suchen</span>
+                    </button>
+                </div>
+
+                <f:if condition="{settings.enableSuggestions}">
+                    <div class="search-suggestions" id="search-suggestions" style="display: none;"></div>
+                </f:if>
+            </form>
+
+            <div class="search-results" id="search-results"></div>
+
+            <f:if condition="{settings.enableAsk}">
+                <div class="search-ai-section" id="search-ai">
+                    <h3>KI-Assistent</h3>
+                    <div class="ai-response" id="ai-response"></div>
+                </div>
+            </f:if>
+        </div>
+    </div>
+
+    <f:asset.css identifier="pixelcoda-search">
+        <style>
+            .pixelcoda-search-container {
+                max-width: 900px;
+                margin: 2rem auto;
+                padding: 0 1rem;
+            }
+
+            .search-wrapper {
+                background: #f8f9fa;
+                border-radius: 12px;
+                padding: 2rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .search-title {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+                color: #1a1a1a;
+            }
+
+            .search-input-group {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .search-input {
+                flex: 1;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                transition: border-color 0.3s;
+            }
+
+            .search-input:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            .search-button {
+                padding: 0.75rem 1.5rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .search-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
+
+            .search-suggestions {
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                margin-top: 0.5rem;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .suggestion-item {
+                padding: 0.75rem 1rem;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            .suggestion-item:hover {
+                background-color: #f0f0f0;
+            }
+
+            .search-results {
+                margin-top: 2rem;
+            }
+
+            .result-item {
+                background: white;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                transition: transform 0.2s;
+            }
+
+            .result-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .result-title {
+                font-size: 1.25rem;
+                color: #667eea;
+                margin-bottom: 0.5rem;
+            }
+
+            .result-description {
+                color: #666;
+                line-height: 1.6;
+            }
+
+            .search-ai-section {
+                margin-top: 2rem;
+                padding-top: 2rem;
+                border-top: 2px solid #e0e0e0;
+            }
+
+            .ai-response {
+                background: #f0f4ff;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-top: 1rem;
+            }
+
+            .loading {
+                text-align: center;
+                padding: 2rem;
+            }
+
+            .spinner {
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #667eea;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </f:asset.css>
+
+    <f:asset.javascript identifier="pixelcoda-search">
+        <script>
+            (function() {
+                const config = {
+                    apiUrl: '{settings.apiUrl -> f:format.raw()}',
+                    apiKey: '{settings.apiKey -> f:format.raw()}',
+                    project: '{settings.project -> f:format.raw()}',
+                    collections: '{settings.collections -> f:format.raw()}'.split(','),
+                    enableSuggestions: {
+                        settings.enableSuggestions
+                    },
+                    enableAsk: {
+                        settings.enableAsk
+                    }
+                };
+
+                const searchForm = document.getElementById('pixelcoda-search-form');
+                const searchInput = document.getElementById('search-input');
+                const searchResults = document.getElementById('search-results');
+                const suggestions = document.getElementById('search-suggestions');
+
+                // Search functionality
+                searchForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const query = searchInput.value.trim();
+                    if (!query) return;
+
+                    searchResults.innerHTML = '<div class="loading"><div class="spinner"></div>Suche läuft...</div>';
+
+                    try {
+                        // In production, this would call the actual API
+                        // const response = await fetch(`${config.apiUrl}/v1/search/${config.project}`, {
+                        //     method: 'POST',
+                        //     headers: {
+                        //         'Content-Type': 'application/json',
+                        //         'X-API-Key': config.apiKey
+                        //     },
+                        //     body: JSON.stringify({
+                        //         query: query,
+                        //         collections: config.collections
+                        //     })
+                        // });
+
+                        // Mock results for demo
+                        const mockResults = [{
+                            title: 'Suchergebnis für "' + query + '"',
+                            description: 'Dies ist ein Beispielergebnis aus der TYPO3 Suche.',
+                            url: '#'
+                        }];
+
+                        displayResults(mockResults);
+                    } catch (error) {
+                        searchResults.innerHTML = '<div class="error">Fehler bei der Suche: ' + error.message + '</div>';
+                    }
+                });
+
+                function displayResults(results) {
+                    if (results.length === 0) {
+                        searchResults.innerHTML = '<div class="no-results">Keine Ergebnisse gefunden.</div>';
+                        return;
+                    }
+
+                    searchResults.innerHTML = results.map(result => `
+                        <div class="result-item">
+                            <h3 class="result-title">
+                                <a href="${result.url}">${result.title}</a>
+                            </h3>
+                            <p class="result-description">${result.description}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Auto-suggest
+                if (config.enableSuggestions) {
+                    let suggestTimeout;
+                    searchInput.addEventListener('input', (e) => {
+                        clearTimeout(suggestTimeout);
+                        const query = e.target.value.trim();
+
+                        if (query.length < 2) {
+                            suggestions.style.display = 'none';
+                            return;
+                        }
+
+                        suggestTimeout = setTimeout(() => {
+                            // Mock suggestions
+                            const mockSuggestions = ['TYPO3', 'Headless', 'Search'].filter(s =>
+                                s.toLowerCase().includes(query.toLowerCase())
+                            );
+
+                            if (mockSuggestions.length > 0) {
+                                suggestions.innerHTML = mockSuggestions.map(s => `
+                                    <div class="suggestion-item" onclick="selectSuggestion('${s}')">${s}</div>
+                                `).join('');
+                                suggestions.style.display = 'block';
+                            } else {
+                                suggestions.style.display = 'none';
+                            }
+                        }, 300);
+                    });
+                }
+
+                window.selectSuggestion = function(text) {
+                    searchInput.value = text;
+                    suggestions.style.display = 'none';
+                    searchForm.dispatchEvent(new Event('submit'));
+                };
+            })();
+        </script>
+    </f:asset.javascript>
+</f:section>
+
+</html>

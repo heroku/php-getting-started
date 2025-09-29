@@ -1,0 +1,107 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="Main">
+    <div class="search-results-container">
+        <h1>
+            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.title" />
+        </h1>
+
+        <!-- Search Form -->
+        <div class="search-form-wrapper">
+            <form class="search-form" action="" method="get">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" name="q" value="{searchQuery}" placeholder="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.placeholder.default')}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.input')}">
+                    <button type="submit" class="search-button" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.submit')}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <span>
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.button.submit" /></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Message -->
+        <f:if condition="{message}">
+            <p class="search-message">{message}</p>
+        </f:if>
+
+        <!-- Results -->
+        <f:if condition="{results}">
+            <f:then>
+                <div class="search-results">
+                    <f:for each="{results}" as="result">
+                        <article class="search-result-item">
+                            <h2 class="search-result-title">
+                                <a href="{result.url}">{result.title}</a>
+                            </h2>
+                            <f:if condition="{result.page}">
+                                <span class="search-result-page">
+                                    <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.page" /> {result.page}</span>
+                            </f:if>
+                            <p class="search-result-abstract">{result.abstract}</p>
+                            <a href="{result.url}" class="search-result-link">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.link" /></a>
+                        </article>
+                    </f:for>
+                </div>
+
+                <!-- Pagination -->
+                <f:if condition="{pagination}">
+                    <nav class="pagination-wrapper" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.label')}">
+                        <ul class="pagination">
+                            <f:if condition="{pagination.prev}">
+                                <li class="page-item">
+                                    <a class="page-link" href="?q={searchQuery}&page={pagination.prev}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.previous')}">
+                                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.previous" />
+                                    </a>
+                                </li>
+                            </f:if>
+
+                            <f:for each="{pagination.pages}" as="pageNumber">
+                                <li class="page-item {f:if(condition: '{pageNumber} == {pagination.current}', then: 'active')}">
+                                    <f:if condition="{pageNumber} == {pagination.current}">
+                                        <f:then>
+                                            <span class="page-link current">{pageNumber}</span>
+                                        </f:then>
+                                        <f:else>
+                                            <a class="page-link" href="?q={searchQuery}&page={pageNumber}">{pageNumber}</a>
+                                        </f:else>
+                                    </f:if>
+                                </li>
+                            </f:for>
+
+                            <f:if condition="{pagination.next}">
+                                <li class="page-item">
+                                    <a class="page-link" href="?q={searchQuery}&page={pagination.next}" aria-label="{f:translate(key: 'LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.aria.next')}">
+                                        <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.next" />
+                                    </a>
+                                </li>
+                            </f:if>
+                        </ul>
+                        <p class="pagination-info">
+                            <f:format.printf arguments="{0: pagination.current, 1: pagination.total, 2: totalResults}">
+                                <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.pagination.info" />
+                            </f:format.printf>
+                        </p>
+                    </nav>
+                </f:if>
+            </f:then>
+            <f:else>
+                <f:if condition="{searchQuery}">
+                    <div class="no-results">
+                        <p>
+                            <f:translate key="LLL:EXT:pixelcoda_search/Resources/Private/Language/locallang.xlf:search.results.noresults" />
+                        </p>
+                    </div>
+                </f:if>
+            </f:else>
+        </f:if>
+    </div>
+</f:section>
+
+</html>
