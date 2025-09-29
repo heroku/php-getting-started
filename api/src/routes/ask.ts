@@ -16,6 +16,157 @@ import {
 export const router = new Hono();
 const engine = new MeiliEngine(process.env.MEILI_URL || 'http://localhost:7700', process.env.MEILI_KEY);
 
+// SSE streaming ask endpoint
+router.post('/ask/:project/stream', 
+  authMiddleware.requireKey('read'), 
+  zValidator('json', askSchema), 
+  async (c) => {
+    const { project } = c.req.param();
+    const { q, lang, collections, maxPassages, temperature, includeDebug } = await c.req.json();
+
+    return stream(c, async (stream) => {
+      try {
+        // Set SSE headers
+        c.header('Content-Type', 'text/event-stream');
+        c.header('Cache-Control', 'no-cache');
+        c.header('Connection', 'keep-alive');
+
+        // Send initial status
+        await stream.write(`data: ${JSON.stringify({
+          type: 'status',
+          message: 'Suche nach relevanten Inhalten...'
+        })}\n\n`);
+
+        // Perform search (same logic as regular ask)
+        let passages: any[] = [];
+        let useVectorSearch = process.env.ENABLE_VECTOR_SEARCH === 'true';
+
+        if (useVectorSearch) {
+          try {
+            const queryEmbedding = await embed(q);
+            const vectorResults = await vectorSearch(project, queryEmbedding, {
+              collections,
+              limit: Math.max(maxPassages * 2, 20),
+              threshold: 0.5
+            });
+
+            passages = vectorResults.map(result => ({
+              id: result.id,
+              title: result.title || 'Dokument',
+              url: result.url,
+              text: result.content || '',
+              score: result.similarity,
+              collection: result.collection,
+              source: 'vector'
+            }));
+
+            await stream.write(`data: ${JSON.stringify({
+              type: 'search_results',
+              count: passages.length,
+              method: 'vector'
+            })}\n\n`);
+          } catch (error) {
+            useVectorSearch = false;
+          }
+        }
+
+        if (!useVectorSearch || passages.length === 0) {
+          const searchResults = await engine.search(project, {
+            q,
+            limit: Math.max(maxPassages * 2, 20),
+            filters: collections?.length ? { _collection: collections } : undefined
+          });
+          
+          passages = (searchResults.hits || []).map((hit: any) => ({
+            id: hit.id,
+            title: hit.title || 'Dokument',
+            url: hit.url,
+            text: hit.content || hit.summary || '',
+            score: hit._score || 0,
+            collection: hit._collection,
+            source: 'keyword'
+          }));
+
+          await stream.write(`data: ${JSON.stringify({
+            type: 'search_results',
+            count: passages.length,
+            method: 'keyword'
+          })}\n\n`);
+        }
+
+        if (passages.length === 0) {
+          await stream.write(`data: ${JSON.stringify({
+            type: 'error',
+            message: 'Keine relevanten Inhalte gefunden.'
+          })}\n\n`);
+          return;
+        }
+
+        // Send citations first
+        const validPassages = passages.filter(p => p.text && p.text.length > 0);
+        const topPassages = validPassages.slice(0, maxPassages);
+        
+        const citations = topPassages.map((p, i) => ({
+          id: p.id,
+          title: p.title,
+          url: p.url,
+          snippet: p.text.slice(0, 200) + (p.text.length > 200 ? '...' : ''),
+          collection: p.collection,
+          reference: `[${i + 1}]`
+        }));
+
+        await stream.write(`data: ${JSON.stringify({
+          type: 'citations',
+          citations
+        })}\n\n`);
+
+        // Generate answer with streaming
+        await stream.write(`data: ${JSON.stringify({
+          type: 'status',
+          message: 'Generiere KI-Antwort...'
+        })}\n\n`);
+
+        const contextText = topPassages
+          .map((p, i) => `[${i + 1}] Titel: ${p.title}\nInhalt: ${p.text.slice(0, 800)}`)
+          .join('\n\n');
+
+        const prompt = `Beantworte die Frage präzise basierend auf den bereitgestellten Informationen. 
+Verwende nur die gegebenen Quellen und zitiere sie mit [1], [2], etc.
+Wenn die Informationen nicht ausreichen, sage das ehrlich.
+
+Frage: ${q}
+
+Verfügbare Informationen:
+${contextText}
+
+Antwort:`;
+
+        // Stream the answer generation
+        const answer = await generateAnswer(prompt);
+        
+        await stream.write(`data: ${JSON.stringify({
+          type: 'answer',
+          text: answer,
+          final: true
+        })}\n\n`);
+
+        await stream.write(`data: ${JSON.stringify({
+          type: 'complete',
+          message: 'Antwort vollständig generiert.'
+        })}\n\n`);
+
+      } catch (error) {
+        console.error('SSE Ask error:', error);
+        await stream.write(`data: ${JSON.stringify({
+          type: 'error',
+          message: error instanceof Error ? error.message : 'Unbekannter Fehler'
+        })}\n\n`);
+      }
+    });
+  }
+);
+
+// Regular ask endpoint (non-streaming)
 router.post('/ask/:project', 
   authMiddleware.requireKey('read'), 
   zValidator('json', askSchema), 
