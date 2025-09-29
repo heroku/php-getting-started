@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
+import { stream } from 'hono/streaming';
 import { authMiddleware } from '../middleware/auth.js';
 import { MeiliEngine } from '../engines/meili.js';
 import { generateAnswer, rerank, embed } from '@pixelcoda/llm-adapter';

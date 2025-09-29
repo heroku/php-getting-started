@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { authMiddleware } from '../middleware/auth.js';
 import { MeiliEngine } from '../engines/meili.js';
+import { HybridEngine } from '../engines/hybrid.js';
 import { searchSchema, suggestSchema } from '../schemas.js';
 import { 
   createJsonApiResponse, 
@@ -12,9 +13,19 @@ import {
 } from '../utils/jsonapi.js';
 
 export const router = new Hono();
-const engine = new MeiliEngine(process.env.MEILI_URL || 'http://localhost:7700', process.env.MEILI_KEY);
+const keywordEngine = new MeiliEngine(process.env.MEILI_URL || 'http://localhost:7700', process.env.MEILI_KEY);
+const hybridEngine = new HybridEngine(keywordEngine, {
+  alpha: parseFloat(process.env.HYBRID_ALPHA || '0.5'),
+  k: parseInt(process.env.RRF_K || '60'),
+  enableReranking: process.env.ENABLE_RERANKING === 'true',
+  maxCandidates: parseInt(process.env.HYBRID_MAX_CANDIDATES || '50'),
+  finalCount: parseInt(process.env.HYBRID_FINAL_COUNT || '20')
+});
 
-// Main search endpoint - JSON:API 1.0 compatible
+// Use hybrid engine if vector search is enabled, otherwise fallback to keyword
+const engine = process.env.ENABLE_VECTOR_SEARCH === 'true' ? hybridEngine : keywordEngine;
+
+// Main search endpoint - JSON:API 1.0 compatible with param-alias support
 router.post('/search/:project', 
   authMiddleware.requireKey('read'), 
   zValidator('json', searchSchema), 
@@ -24,6 +35,10 @@ router.post('/search/:project',
       const { project } = c.req.param();
       const payload = await c.req.json();
       const baseUrl = new URL(c.req.url).origin;
+      
+      // Support JSON:API param-alias: page[number]/page[size]
+      if (payload['page[number]']) payload.page = payload['page[number]'];
+      if (payload['page[size]']) payload.limit = payload['page[size]'];
       
       // Add collection filtering if specified
       if (payload.collections?.length) {
@@ -55,7 +70,7 @@ router.post('/search/:project',
         payload.q
       );
 
-      // Create JSON:API meta
+      // Create JSON:API meta with hybrid search info
       const meta = {
         pagination: {
           page: payload.page,
@@ -68,7 +83,11 @@ router.post('/search/:project',
           response_time_ms: responseTime,
           collections: payload.collections || [],
           language: payload.lang || 'de',
-          processing_time_ms: searchResults.processingTimeMs || responseTime
+          processing_time_ms: searchResults.processingTimeMs || responseTime,
+          // Hybrid search metadata
+          search_methods: searchResults.searchMethods || ['keyword'],
+          fusion_score: searchResults.fusionScore,
+          engine_type: process.env.ENABLE_VECTOR_SEARCH === 'true' ? 'hybrid' : 'keyword'
         }
       };
 
