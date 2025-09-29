@@ -5,6 +5,12 @@ export type { SearchBoxProps } from './components/SearchBox';
 export { AnswerPanel } from './components/AnswerPanel';
 export type { AnswerPanelProps } from './components/AnswerPanel';
 
+export { ChatWidget } from './components/ChatWidget';
+export type { ChatWidgetProps } from './components/ChatWidget';
+
+export { FloatingPanel } from './components/FloatingPanel';
+export type { FloatingPanelProps } from './components/FloatingPanel';
+
 // API client
 export { PixelcodaSearchClient } from './client';
 export type { 
